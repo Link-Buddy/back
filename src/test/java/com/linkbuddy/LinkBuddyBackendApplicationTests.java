@@ -1,4 +1,4 @@
-package com.example.linkbuddy_backend;
+package com.linkbuddy;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

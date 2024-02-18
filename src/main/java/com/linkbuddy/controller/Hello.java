@@ -1,4 +1,4 @@
-package com.example.helloworld.controller;
+package com.linkbuddy.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
