@@ -16,13 +16,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ContextConfiguration(classes = AppConfig.class)
 public class BuddyRepositoryTest {
+
     @Autowired
     private BuddyRepository buddyRepository;
 
     @Test
     public void testSaveBuddy() {
         // Buddy 엔티티 생성
-        Buddy buddy = new Buddy();
         buddy.setName("John Doe");
         // Buddy 저장
         Buddy savedBuddy = buddyRepository.save(buddy);
