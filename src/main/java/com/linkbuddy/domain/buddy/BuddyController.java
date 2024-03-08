@@ -1,6 +1,8 @@
 package com.linkbuddy.domain.buddy;
 
+import com.linkbuddy.domain.buddy.dto.BuddyDTO;
 import com.linkbuddy.global.entity.Buddy;
+import com.linkbuddy.global.entity.BuddyUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,8 +35,8 @@ public class BuddyController {
     }
 
     @PostMapping
-    public ResponseEntity<Buddy> saveBuddy(Buddy buddy) {
-        Buddy savedBuddy = buddyService.save(buddy);
-        return new ResponseEntity<Buddy>(savedBuddy, HttpStatus.OK);
+    public ResponseEntity<BuddyUser> saveBuddy(BuddyDTO buddy) throws Exception {
+        BuddyUser savedBuddyUser = buddyService.save(buddy);
+        return new ResponseEntity<BuddyUser>(savedBuddyUser, HttpStatus.OK);
     }
 }

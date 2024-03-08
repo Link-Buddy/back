@@ -1,7 +1,10 @@
 package com.linkbuddy.global.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -9,6 +12,7 @@ import java.sql.Timestamp;
 
 @Entity(name = "BuddyUser")
 @Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  //아무런 값도 갖지 않는 의미 없는 객체 생성을 막음
 public class BuddyUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,4 +45,14 @@ public class BuddyUser {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
     private User user;
+
+
+    @Builder
+    public BuddyUser(Long buddyId, Long userId, Boolean alertTf, Boolean pinTf) {
+        this.buddyId = buddyId;
+        this.userId = userId;
+        this.alertTf = alertTf;
+        this.pinTf = pinTf;
+
+    }
 }
