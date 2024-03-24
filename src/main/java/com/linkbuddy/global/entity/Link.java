@@ -1,7 +1,11 @@
 package com.linkbuddy.global.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
@@ -9,51 +13,49 @@ import java.sql.Timestamp;
 @Entity
 @Data
 @Table(name = "Link")
+@NoArgsConstructor
 public class Link {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(name = "name", nullable = false, length = 255)
-    private String name;
+  @Column(name = "name", nullable = false, length = 255)
+  private String name;
 
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
+  @Column(name = "description", columnDefinition = "TEXT")
+  private String description;
 
-    @Column(name = "link_url", nullable = false, length = 255)
-    private String linkUrl;
+  @Column(name = "link_url", nullable = false, length = 1024)
+  private String linkUrl;
 
-    @Column(name = "link_group_id")
-    private Long linkGroupId;
+  @Column(name = "link_group_id")
+  private Long linkGroupId;
 
-    @Column(name = "delete_tf", nullable = false)
-    private Boolean deleteTf = false;
+  @Column(name = "delete_tf")
+  private Boolean deleteTf = false;
 
-    @Column(name = "created_at", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createdAt;
+  @CreationTimestamp  //Insert 쿼리 발생시 현재 시간 값 적용
+  @Column(name = "created_at")
+  private Timestamp createdAt;
 
-    @Column(name = "updated_at", nullable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
-    private Timestamp updatedAt;
+  @UpdateTimestamp    //Update 쿼리 발생시 현재 시간 값 적용
+  @Column(name = "updated_at")
+  private Timestamp updatedAt;
 
-    @Column(name = "user_id")
-    private Long userId;
-    @Override
-    public String toString() {
-        return "Link{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", linkUrl='" + linkUrl + '\'' +
-                ", linkGroupId=" + linkGroupId +
-                ", deleteTf=" + deleteTf +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", userId=" + userId +
-                '}';
-    }
+  @Column(name = "user_id", nullable = false)
+  private Long userId;
 
-    public boolean isHost(Long userId) {
-        return this.userId.equals(userId);
-    }
+  @Builder
+  public Link(String name, String description, String linkUrl, Long linkGroupId, Long userId) {
+    this.name = name;
+    this.description = description;
+    this.linkUrl = linkUrl;
+    this.linkGroupId = linkGroupId;
+    this.userId = userId;
+  }
+
+  public boolean isHost(Long userId) {
+    return this.userId.equals(userId);
+  }
 }
