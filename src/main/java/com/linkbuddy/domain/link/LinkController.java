@@ -23,27 +23,27 @@ public class LinkController {
   }
 
   @GetMapping("{id}")
-  public ResponseEntity<Link> getLink(@PathVariable("id") Long id) {
+  public ResponseEntity<Link> getLink(@PathVariable("id") Long id) throws Exception {
 
     Link link = linkService.findOneActive(id);
     return ResponseEntity.ok(link);
   }
 
   @PostMapping
-  public ResponseEntity<Link> createLink(@RequestBody Link link) {
-    System.out.println("Received link: " + link.toString());
-    Link newLink = linkService.save(link);
+  public ResponseEntity<Link> createLink(@RequestBody LinkDto.Create createDto) throws Exception {
+
+    Link newLink = linkService.save(createDto);
     return ResponseEntity.ok(newLink);
   }
 
   @PatchMapping("{id}")
-  public ResponseEntity<Link> updateLink(@PathVariable("id") Long id, @RequestBody Link link) {
-    Link updatedLink = linkService.update(id, link);
+  public ResponseEntity<Link> updateLink(@PathVariable("id") Long id, @RequestBody LinkDto.Update updateDto) throws Exception {
+    Link updatedLink = linkService.update(id, updateDto);
     return ResponseEntity.ok(updatedLink);
   }
 
   @DeleteMapping("{id}")
-  public void deleteLink(@PathVariable("id") Long id) {
+  public void deleteLink(@PathVariable("id") Long id) throws Exception {
     Long userId = getCurrentUserId();
     linkService.delete(id, userId);
   }
