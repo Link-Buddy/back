@@ -1,17 +1,19 @@
-package com.linkbuddy.domain.link;
+package com.linkbuddy.global.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.sql.Timestamp;
 
 
 @Entity
+@Data
 @Table(name = "Link")
 public class Link {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
@@ -23,7 +25,7 @@ public class Link {
     private String linkUrl;
 
     @Column(name = "link_group_id")
-    private Integer linkGroupId;
+    private Long linkGroupId;
 
     @Column(name = "delete_tf", nullable = false)
     private Boolean deleteTf = false;
@@ -35,6 +37,23 @@ public class Link {
     private Timestamp updatedAt;
 
     @Column(name = "user_id")
-    private Integer userId;
+    private Long userId;
+    @Override
+    public String toString() {
+        return "Link{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", linkUrl='" + linkUrl + '\'' +
+                ", linkGroupId=" + linkGroupId +
+                ", deleteTf=" + deleteTf +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", userId=" + userId +
+                '}';
+    }
 
+    public boolean isHost(Long userId) {
+        return this.userId.equals(userId);
+    }
 }
