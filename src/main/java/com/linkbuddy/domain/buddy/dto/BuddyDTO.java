@@ -20,6 +20,7 @@ public class BuddyDTO {
     private Long id;
     private String name;
     private Long userId;
+    private Long buddyId;
     private Boolean alertTf;
     private Boolean pinTf;
 }

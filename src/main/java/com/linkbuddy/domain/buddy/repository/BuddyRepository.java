@@ -1,5 +1,6 @@
 package com.linkbuddy.domain.buddy.repository;
 
+import com.linkbuddy.domain.buddy.dto.BuddyDTO;
 import com.linkbuddy.global.entity.Buddy;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j;

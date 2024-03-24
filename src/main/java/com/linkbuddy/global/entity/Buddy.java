@@ -22,6 +22,9 @@ public class Buddy {
     @Column(nullable = false, length = 100)
     private String name;
 
+    @Column(nullable = false)
+    private Long creator_id;
+
     @CreationTimestamp  //Insert 쿼리 발생시 현재 시간 값 적용
     @Column(name = "created_at")
     private Timestamp created_at;
@@ -31,7 +34,12 @@ public class Buddy {
     private Timestamp updated_at;
 
     @Builder
-    public Buddy(String name) {
+    public Buddy(String name, Long creator_id) {
+        this.name = name;
+        this.creator_id = creator_id;
+    }
+
+    public void update(String name) {
         this.name = name;
     }
 }
