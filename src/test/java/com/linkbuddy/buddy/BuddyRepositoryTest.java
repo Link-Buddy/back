@@ -40,10 +40,7 @@ public class BuddyRepositoryTest {
     public void testSaveBuddy() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         // Buddy 엔티티 생성
-        Buddy buddy = new Buddy();
-        buddy.setName("yuji");
-        buddy.setCreated_at(timestamp);
-        buddy.setUpdated_at(timestamp);
+        Buddy buddy = Buddy.builder().name("yuji").build();
         // Buddy 저장
         System.out.println(buddy);
         Buddy savedBuddy = buddyRepository.save(buddy);
