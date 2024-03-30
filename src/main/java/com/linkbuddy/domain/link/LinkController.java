@@ -36,16 +36,18 @@ public class LinkController {
     return ResponseEntity.ok(newLink);
   }
 
-  @PatchMapping("{id}")
+  @PutMapping("{id}")
   public ResponseEntity<Link> updateLink(@PathVariable("id") Long id, @RequestBody LinkDto.Update updateDto) throws Exception {
-    Link updatedLink = linkService.update(id, updateDto);
+    Long userId = getCurrentUserId();
+    Link updatedLink = linkService.update(id, updateDto, userId);
     return ResponseEntity.ok(updatedLink);
   }
 
   @DeleteMapping("{id}")
-  public void deleteLink(@PathVariable("id") Long id) throws Exception {
+  public ResponseEntity<?> deleteLink(@PathVariable("id") Long id) throws Exception {
     Long userId = getCurrentUserId();
     linkService.delete(id, userId);
+    return ResponseEntity.ok().build();
   }
 
   private Long getCurrentUserId() {

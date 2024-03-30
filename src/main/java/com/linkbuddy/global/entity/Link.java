@@ -1,5 +1,6 @@
 package com.linkbuddy.global.entity;
 
+import com.linkbuddy.domain.link.LinkDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
@@ -58,4 +59,12 @@ public class Link {
   public boolean isHost(Long userId) {
     return this.userId.equals(userId);
   }
+
+  public void updateLink(LinkDto.Update updateLinkDto) {
+    this.name = updateLinkDto.getName();
+    this.description = updateLinkDto.getDescription();
+    this.linkGroupId = updateLinkDto.getLinkGroupId();
+    this.deleteTf = updateLinkDto.getDeleteTf();
+  }
+
 }

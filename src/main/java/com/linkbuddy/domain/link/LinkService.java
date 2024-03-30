@@ -55,12 +55,17 @@ public class LinkService {
 
   }
 
-  public Link update(Long id, LinkDto.Update linkDto) throws Exception {
+  public Link update(Long id, LinkDto.Update linkDto, Long userId) throws Exception {
     try {
 
-      Link existLink = this.findOneActive(id);
+      Link existLink = findOneActive(id);
 
-      return existLink;
+      if (!existLink.isHost(userId)) {
+        throw new IllegalArgumentException("삭제 권한 없음"); //공통 예외?
+      }
+
+      existLink.updateLink(linkDto);
+      return linkRepository.save(existLink);
     } catch (Exception e) {
       System.out.println("e");
       throw new Exception(e);
@@ -69,7 +74,7 @@ public class LinkService {
 
   public void delete(Long id, Long userId) throws Exception {
     try {
-      var existLink = findOneActive(id);
+      Link existLink = findOneActive(id);
 
       if (!existLink.isHost(userId)) {
         throw new IllegalArgumentException("삭제 권한 없음"); //공통 예외?

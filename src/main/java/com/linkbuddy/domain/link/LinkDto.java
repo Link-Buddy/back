@@ -44,12 +44,13 @@ public class LinkDto {
   }
 
   @Getter
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
   public static class Update {
     private String name;
     private String description;
     private Long linkGroupId; // 새로운 링크 그룹 ID
     private Boolean deleteTf;
+
 
 //    public Update(String name, String description, Long linkGroupId, Boolean deleteTf) {
 //      this.name = name;
