@@ -1,6 +1,8 @@
 package com.linkbuddy.domain.buddy;
 
 import com.linkbuddy.domain.buddy.dto.BuddyDTO;
+import com.linkbuddy.domain.buddy.dto.BuddyInterface;
+import com.linkbuddy.domain.user.dto.UserInterface;
 import com.linkbuddy.global.entity.Buddy;
 import com.linkbuddy.global.entity.BuddyUser;
 import com.linkbuddy.global.util.ResponseMessage;
@@ -28,10 +30,29 @@ public class BuddyController {
      * @return
      */
     @GetMapping
-    public ResponseEntity<List<BuddyDTO>> getBuddyList(@RequestParam(value = "userId") Long userId) {
+    public ResponseEntity getBuddyList(@RequestParam(value = "userId") Long userId) {
         log.debug("userId = {}", userId);
-        List<BuddyDTO> buddies = buddyService.findAll(userId);
-        return new ResponseEntity<List<BuddyDTO>>(buddies, HttpStatus.OK);
+        List<BuddyInterface> buddyList = buddyService.findAll(userId);
+        return ResponseEntity.ok(ResponseMessage.builder()
+                .status(StatusEnum.OK)
+                .data(buddyList)
+                .build());
+    }
+
+    /**
+     * 버디에 참여중인 회원 리스트
+     * @param buddyId
+     * @return
+     * @throws Exception
+     */
+    @GetMapping(value = "/user")
+    public ResponseEntity getBuddyUserList(@RequestParam(value = "buddyId") Long buddyId) throws Exception {
+        log.debug("buddyId = {}, buddyId");
+        List<UserInterface> userList = buddyService.findUserAll(buddyId);
+        return ResponseEntity.ok(ResponseMessage.builder()
+                .status(StatusEnum.OK)
+                .data(userList)
+                .build());
     }
 
     /**
