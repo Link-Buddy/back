@@ -72,7 +72,7 @@ public class BuddyController {
     }
 
     /**
-     * 버디 수정
+     * 버디 수정 (이름 수정)
      * @param id
      * @param buddy
      * @return
@@ -84,6 +84,22 @@ public class BuddyController {
         return ResponseEntity.ok(ResponseMessage.builder()
                 .status(StatusEnum.OK)
                 .data(updateBuddy)
+                .build());
+    }
+
+    /**
+     * 회원 버디 수정 (알림설정 & 고정여부)
+     * @param id
+     * @param buddy
+     * @return
+     * @throws Exception
+     */
+    @PutMapping(value = "/user/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity updateBuddyUser(@PathVariable("id") Long id, @RequestBody BuddyDTO buddy) throws Exception {
+        BuddyUser updateBuddyUser = buddyService.updateBuddyUser(id, buddy);
+        return ResponseEntity.ok(ResponseMessage.builder()
+                .status(StatusEnum.OK)
+                .data(updateBuddyUser)
                 .build());
     }
 

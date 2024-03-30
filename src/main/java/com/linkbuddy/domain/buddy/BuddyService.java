@@ -44,13 +44,13 @@ public class BuddyService {
         try {
             Buddy newBuddy = Buddy.builder()
                     .name(buddy.getName())
-                    .creator_id(Long.valueOf(buddy.getUserId()))
+                    .creator_id(buddy.getUserId())
                     .build();
             // Buddy save
             Buddy savedBuddy = buddyRepository.save(newBuddy);
 
             BuddyUser newBuddyUser = BuddyUser.builder()
-                    .userId(Long.valueOf(buddy.getUserId()))
+                    .userId(buddy.getUserId())
                     .buddyId(savedBuddy.getId())
                     .alertTf(buddy.getAlertTf())
                     .pinTf(buddy.getPinTf())
@@ -82,6 +82,20 @@ public class BuddyService {
         }
     }
 
+    @Transactional
+    public BuddyUser updateBuddyUser(Long id, BuddyDTO buddyDTO) throws Exception {
+        try {
+            BuddyUser buddyUser = buddyUserRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Not exist Buddy user Data"));
+            log.info("buddyUser = {}", buddyUser);
+            buddyUser.update(buddyDTO.getAlertTf(), buddyDTO.getPinTf());
+            log.info("buddyUser after update = {}", buddyUser);
+            return buddyUser;
+
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
     public Boolean delete(Long id) throws Exception {
         try {
             log.info("buddy user id= {}", id);
