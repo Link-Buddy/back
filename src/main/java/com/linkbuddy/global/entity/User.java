@@ -5,7 +5,6 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
-import java.util.function.LongToIntFunction;
 
 @Entity(name = "User")
 @Data

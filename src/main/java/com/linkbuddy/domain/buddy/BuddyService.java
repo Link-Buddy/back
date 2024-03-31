@@ -1,8 +1,10 @@
 package com.linkbuddy.domain.buddy;
 
 import com.linkbuddy.domain.buddy.dto.BuddyDTO;
+import com.linkbuddy.domain.buddy.dto.BuddyInterface;
 import com.linkbuddy.domain.buddy.repository.BuddyRepository;
 import com.linkbuddy.domain.buddy.repository.BuddyUserRepository;
+import com.linkbuddy.domain.user.dto.UserInterface;
 import com.linkbuddy.global.entity.Buddy;
 import com.linkbuddy.global.entity.BuddyUser;
 import jakarta.transaction.Transactional;
@@ -10,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +24,14 @@ public class BuddyService {
     @Autowired
     private BuddyUserRepository buddyUserRepository;
 
-    public List<BuddyDTO> findAll(Long userId) {
-        List<BuddyDTO> buddies = buddyUserRepository.findBuddyById(Math.toIntExact(userId));
-        return buddies;
+    public List<BuddyInterface> findAll(Long userId) {
+        List<BuddyInterface> buddyList = buddyUserRepository.findBuddyById(userId);
+        return buddyList;
+    }
+
+    public List<UserInterface> findUserAll(Long buddyId) {
+        List<UserInterface> userList = buddyUserRepository.findUserByBuddyId(buddyId);
+        return userList;
     }
 
     public Optional<Buddy> findById(Long id) {
@@ -44,13 +50,13 @@ public class BuddyService {
         try {
             Buddy newBuddy = Buddy.builder()
                     .name(buddy.getName())
-                    .creator_id(Long.valueOf(buddy.getUserId()))
+                    .creator_id(buddy.getUserId())
                     .build();
             // Buddy save
             Buddy savedBuddy = buddyRepository.save(newBuddy);
 
             BuddyUser newBuddyUser = BuddyUser.builder()
-                    .userId(Long.valueOf(buddy.getUserId()))
+                    .userId(buddy.getUserId())
                     .buddyId(savedBuddy.getId())
                     .alertTf(buddy.getAlertTf())
                     .pinTf(buddy.getPinTf())
@@ -82,6 +88,20 @@ public class BuddyService {
         }
     }
 
+    @Transactional
+    public BuddyUser updateBuddyUser(Long id, BuddyDTO buddyDTO) throws Exception {
+        try {
+            BuddyUser buddyUser = buddyUserRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Not exist Buddy user Data"));
+            log.info("buddyUser = {}", buddyUser);
+            buddyUser.update(buddyDTO.getAlertTf(), buddyDTO.getPinTf());
+            log.info("buddyUser after update = {}", buddyUser);
+            return buddyUser;
+
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
     public Boolean delete(Long id) throws Exception {
         try {
             log.info("buddy user id= {}", id);

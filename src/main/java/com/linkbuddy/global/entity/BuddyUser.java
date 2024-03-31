@@ -1,5 +1,6 @@
 package com.linkbuddy.global.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -40,19 +41,25 @@ public class BuddyUser {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buddy_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JsonIgnore
     private Buddy buddy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JsonIgnore
     private User user;
 
 
     @Builder
-    public BuddyUser(Long buddyId, Long userId, Boolean alertTf, Boolean pinTf) {
-        this.buddyId = buddyId;
+    public BuddyUser(Long userId, Long buddyId, Boolean alertTf, Boolean pinTf) {
         this.userId = userId;
+        this.buddyId = buddyId;
         this.alertTf = alertTf;
         this.pinTf = pinTf;
+    }
 
+    public void update(Boolean alertTf, Boolean pinTf) {
+        this.alertTf = alertTf;
+        this.pinTf = pinTf;
     }
 }
