@@ -20,8 +20,13 @@ public class LinkService {
     return linkRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Link not found." + id));
   }
 
-  public Link findOneActive(Long id) {
-    return linkRepository.findOneActive(id).orElseThrow(() -> new IllegalArgumentException("Active Link not found." + id));
+  public Link findOneActive(Long id) throws Exception {
+    try {
+      return linkRepository.findOneActive(id).orElseThrow(() -> new IllegalArgumentException("Active Link not found." + id));
+    } catch (Exception e) {
+      System.out.println("e");
+      throw new Exception(e);
+    }
   }
 
   public Link save(Link link) {
@@ -29,19 +34,57 @@ public class LinkService {
     return link;
   }
 
-  public Link update(Long id, Link link) {
-    return link;
-  }
+  public Link save(LinkDto.Create linkDto) throws Exception {
+    try {
 
-  public void delete(Long id, Long userId) {
-    var existLink = findOneActive(id);
+      Long userId = (long) 1234; //getUserId;
 
-    if (!existLink.isHost(userId)) {
-      throw new IllegalArgumentException("삭제 권한 없음"); //공통 예외?
+      Link newLink = Link.builder()
+              .name(linkDto.getName())
+              .description(linkDto.getDescription())
+              .linkUrl(linkDto.getLinkUrl())
+              .linkGroupId(linkDto.getLinkGroupId())
+              .userId(userId)
+              .build();
+
+      return linkRepository.save(newLink);
+    } catch (Exception e) {
+      System.out.println("e");
+      throw new Exception(e);
     }
 
-    existLink.setDeleteTf(true);
-    linkRepository.save(existLink);
+  }
 
+  public Link update(Long id, LinkDto.Update linkDto, Long userId) throws Exception {
+    try {
+
+      Link existLink = findOneActive(id);
+
+      if (!existLink.isHost(userId)) {
+        throw new IllegalArgumentException("삭제 권한 없음"); //공통 예외?
+      }
+
+      existLink.updateLink(linkDto);
+      return linkRepository.save(existLink);
+    } catch (Exception e) {
+      System.out.println("e");
+      throw new Exception(e);
+    }
+  }
+
+  public void delete(Long id, Long userId) throws Exception {
+    try {
+      Link existLink = findOneActive(id);
+
+      if (!existLink.isHost(userId)) {
+        throw new IllegalArgumentException("삭제 권한 없음"); //공통 예외?
+      }
+
+      existLink.setDeleteTf(true);
+      linkRepository.save(existLink);
+    } catch (Exception e) {
+      System.out.println("e");
+      throw new Exception(e);
+    }
   }
 }

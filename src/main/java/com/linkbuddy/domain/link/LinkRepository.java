@@ -11,7 +11,10 @@ import java.util.Optional;
 
 public interface LinkRepository extends JpaRepository<Link, Long> {
 
-
+ 
   @Query("SELECT l FROM Link l WHERE l.id = :id AND l.deleteTf = false ")
   Optional<Link> findOneActive(Long id);
+
+//  @Query("SELECT l FROM Link l WHERE l.id = :id AND l.deleteTf = false AND l.userId = :userId")
+//  Optional<Link> findMyOneActive(Long id, Long userId);
 }
