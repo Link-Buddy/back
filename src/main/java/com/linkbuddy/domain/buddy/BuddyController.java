@@ -87,9 +87,28 @@ public class BuddyController {
      * @throws Exception
      */
     @PostMapping
-    public ResponseEntity<BuddyUser> saveBuddy(BuddyDTO buddy) throws Exception {
+    public ResponseEntity saveBuddy(BuddyDTO buddy) throws Exception {
         BuddyUser savedBuddyUser = buddyService.save(buddy);
-        return new ResponseEntity<BuddyUser>(savedBuddyUser, HttpStatus.OK);
+        return ResponseEntity.ok(ResponseMessage.builder()
+                .status(StatusEnum.OK)
+                .data(savedBuddyUser)
+                .build());
+    }
+
+    /**
+     * 버디 회원 생성
+     * @param buddy
+     * @return
+     * @throws Exception
+     */
+    @PostMapping(value = "/user")
+    public ResponseEntity saveBuddyUser(BuddyDTO buddy) throws Exception {
+        log.info("buddy = {}", buddy);
+        BuddyUser savedBuddyUser = buddyService.saveBuddyUser(buddy);
+        return ResponseEntity.ok(ResponseMessage.builder()
+                .status(StatusEnum.OK)
+                .data(savedBuddyUser)
+                .build());
     }
 
     /**
@@ -109,7 +128,7 @@ public class BuddyController {
     }
 
     /**
-     * 회원 버디 수정 (알림설정 & 고정여부)
+     * 회원 버디 수정 (알림설정 & 고정여부 & 초대수락여부)
      * @param id
      * @param buddy
      * @return
@@ -138,5 +157,21 @@ public class BuddyController {
                 .data(deleteBuddy)
                 .build());
 
+    }
+
+    /**
+     * 버디 회원 탈퇴
+     * @param buddyId
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    @DeleteMapping(value = "/user")
+    public ResponseEntity deleteBuddyUser(@RequestParam(value = "buddyId") Long buddyId, @RequestParam(value = "userId") Long userId) throws Exception {
+        Boolean deleteBuddyUser = buddyService.deleteBuddyUser(buddyId, userId);
+        return ResponseEntity.ok(ResponseMessage.builder()
+                .status(StatusEnum.OK)
+                .data(deleteBuddyUser)
+                .build());
     }
 }
