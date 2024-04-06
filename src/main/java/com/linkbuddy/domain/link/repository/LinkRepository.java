@@ -1,6 +1,5 @@
 package com.linkbuddy.domain.link.repository;
 
-import com.linkbuddy.domain.link.repository.LinkCustomRepository;
 import com.linkbuddy.global.entity.Link;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
