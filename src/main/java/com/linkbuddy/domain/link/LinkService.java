@@ -1,11 +1,11 @@
 package com.linkbuddy.domain.link;
 
+import com.linkbuddy.domain.link.repository.LinkRepository;
 import com.linkbuddy.global.entity.Link;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LinkService {
@@ -22,7 +22,7 @@ public class LinkService {
 
   public Link findOneActive(Long id) throws Exception {
     try {
-      return linkRepository.findOneActive(id).orElseThrow(() -> new IllegalArgumentException("Active Link not found." + id));
+      return linkRepository.findOneActive(id);
     } catch (Exception e) {
       System.out.println("e");
       throw new Exception(e);

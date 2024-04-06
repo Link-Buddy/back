@@ -2,6 +2,8 @@ package com.linkbuddy.domain.link;
 
 import com.linkbuddy.global.entity.Buddy;
 import com.linkbuddy.global.entity.Link;
+import com.linkbuddy.global.util.ResponseMessage;
+import com.linkbuddy.global.util.StatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +25,14 @@ public class LinkController {
   }
 
   @GetMapping("{id}")
-  public ResponseEntity<Link> getLink(@PathVariable("id") Long id) throws Exception {
+  public ResponseEntity getLink(@PathVariable("id") Long id) throws Exception {
 
     Link link = linkService.findOneActive(id);
-    return ResponseEntity.ok(link);
+  
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(link)
+            .build());
   }
 
   @PostMapping
