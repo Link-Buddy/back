@@ -3,6 +3,8 @@ package com.linkbuddy.domain.buddy.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.sql.Timestamp;
+
 /**
  * packageName    : com.linkbuddy.domain.buddy.dto
  * fileName       : BuddyDTO
@@ -23,4 +25,6 @@ public class BuddyDTO {
     private Long buddyId;
     private Boolean alertTf;
     private Boolean pinTf;
+    private Boolean acceptTf;
+    private Timestamp acceptDt;
 }
