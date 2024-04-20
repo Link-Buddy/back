@@ -1,7 +1,7 @@
 package com.linkbuddy.domain.buddy.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import com.querydsl.core.annotations.QueryProjection;
+import lombok.*;
 
 import java.sql.Timestamp;
 
@@ -10,14 +10,13 @@ import java.sql.Timestamp;
  * fileName       : BuddyDTO
  * author         : yjkim
  * date           : 2024-03-08
- * description    :
+ * description    : BuddyDTO
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------
  * 2024-03-08        yjkim       최초 생성
  */
 @Data
-@Builder
 public class BuddyDTO {
     private Long id;
     private String name;
@@ -27,4 +26,24 @@ public class BuddyDTO {
     private Boolean pinTf;
     private Boolean acceptTf;
     private Timestamp acceptDt;
+
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class BuddyResponse {
+        private String name;
+        private Long buddyId;
+        private Boolean alertTf;
+        private Boolean pinTf;
+
+        @Builder
+        @QueryProjection
+        public BuddyResponse(Long buddyId, String name, Boolean alertTf, Boolean pinTf) {
+            this.buddyId = buddyId;
+            this.name = name;
+            this.alertTf = alertTf;
+            this.pinTf = pinTf;
+        }
+    }
+
+
 }
