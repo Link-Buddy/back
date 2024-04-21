@@ -3,6 +3,7 @@ package com.linkbuddy.domain.link;
 import com.linkbuddy.global.entity.Link;
 import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,12 @@ public class LinkController {
   private LinkService linkService;
 
   @GetMapping
-  public ResponseEntity<List<Link>> getLinks() {
+  public ResponseEntity getLinks() {
     List<Link> links = linkService.findAll();
-    return ResponseEntity.ok(links);
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(links)
+            .build());
   }
 
   @GetMapping("{id}")
@@ -33,24 +37,33 @@ public class LinkController {
   }
 
   @PostMapping
-  public ResponseEntity<Link> createLink(@RequestBody LinkDto.Create createDto) throws Exception {
+  public ResponseEntity createLink(@Valid @RequestBody LinkDto.Create createDto) throws Exception {
 
     Link newLink = linkService.save(createDto);
-    return ResponseEntity.ok(newLink);
+
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(new LinkDto.Create(newLink))
+            .build());
   }
 
   @PutMapping("{id}")
-  public ResponseEntity<Link> updateLink(@PathVariable("id") Long id, @RequestBody LinkDto.Update updateDto) throws Exception {
+  public ResponseEntity updateLink(@PathVariable("id") Long id, @RequestBody LinkDto.Update updateDto) throws Exception {
     Long userId = getCurrentUserId();
     Link updatedLink = linkService.update(id, updateDto, userId);
-    return ResponseEntity.ok(updatedLink);
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(new LinkDto.Update(updatedLink))
+            .build());
   }
 
   @DeleteMapping("{id}")
-  public ResponseEntity<?> deleteLink(@PathVariable("id") Long id) throws Exception {
+  public ResponseEntity deleteLink(@PathVariable("id") Long id) throws Exception {
     Long userId = getCurrentUserId();
     linkService.delete(id, userId);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .build());
   }
 
   private Long getCurrentUserId() {

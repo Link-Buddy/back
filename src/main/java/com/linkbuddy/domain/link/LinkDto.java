@@ -1,6 +1,7 @@
 package com.linkbuddy.domain.link;
 
 
+import com.linkbuddy.global.entity.Link;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -19,9 +20,11 @@ import org.hibernate.validator.constraints.Length;
  */
 
 public class LinkDto {
+
   @Getter
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   public static class Create {
+    private Long id;
 
     @NotBlank(message = "이름은 공백이 아니어야 합니다.")
     @Length(max = 255, message = "글자 수는 최대 255자 이하여야 합니다.")
@@ -33,19 +36,21 @@ public class LinkDto {
     private String linkUrl;
     private Long linkGroupId;
 
-//    @Builder
-//    public Create(String name, String description, String linkUrl, Long linkGroupId) {
-//      this.name = name;
-//      this.description = description;
-//      this.linkUrl = linkUrl;
-//      this.linkGroupId = linkGroupId;
-//    }
-
+    @Builder
+    public Create(Link l) {
+      this.id = l.getId();
+      this.name = l.getName();
+      this.description = l.getDescription();
+      this.linkUrl = l.getLinkUrl();
+      this.linkGroupId = l.getLinkGroupId();
+    }
   }
 
   @Getter
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   public static class Update {
+    private Long id;
+    private String linkUrl;
 
     @NotBlank(message = "이름은 공백이 아니어야 합니다.")
     @Length(max = 255, message = "글자 수는 최대 255자 이하여야 합니다.")
@@ -58,12 +63,14 @@ public class LinkDto {
     @NotNull
     private Boolean deleteTf;
 
-
-//    public Update(String name, String description, Long linkGroupId, Boolean deleteTf) {
-//      this.name = name;
-//      this.description = description;
-//      this.linkGroupId = linkGroupId;
-//      this.deleteTf = deleteTf;
-//    }
+    @Builder
+    public Update(Link l) {
+      this.id = l.getId();
+      this.name = l.getName();
+      this.description = l.getDescription();
+      this.linkUrl = l.getLinkUrl();
+      this.linkGroupId = l.getLinkGroupId();
+      this.deleteTf = l.getDeleteTf();
+    }
   }
 }
