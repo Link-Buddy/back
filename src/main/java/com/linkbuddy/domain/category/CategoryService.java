@@ -32,20 +32,60 @@ public class CategoryService {
       Long userId = (long) 1234; //getUserId;
       Long shareType = (long) 10; //get ShearType
 
-      Category generalLinkGroup = Category.builder()
-              .groupName(privateGroupDto.getGroupName())
+
+      Category generalPrivateCategory = Category.builder()
+              .categoryName("미분류")
               .shareTypeCd(shareType)
               .userId(userId)
               .build();
 
-      return categoryRepository.save(generalLinkGroup);
+      return categoryRepository.save(generalPrivateCategory);
     } catch (Exception e) {
       System.out.println("e");
       throw new Exception(e);
     }
   }
 
-  public List<Tuple> findMyPrivateGroup() throws Exception {
+  public Category createPrivateCategory(CategoryDto.CreatePrivate privateCategoryDto) throws Exception {
+    try {
+
+      Long userId = (long) 1234; //getUserId;
+      Long shareType = (long) 10; //get private ShearType
+
+      Category newPrivateCategory = Category.builder()
+              .categoryName(privateCategoryDto.getCategoryName())
+              .shareTypeCd(shareType)
+              .userId(userId)
+              .build();
+
+      return categoryRepository.save(newPrivateCategory);
+    } catch (Exception e) {
+      System.out.println("e");
+      throw new Exception(e);
+    }
+  }
+
+  public Category createBuddyCategory(CategoryDto.CreatePublic publicCategoryDto) throws Exception {
+    try {
+
+      Long userId = (long) 1234; //getUserId;
+      Long shareType = (long) 20; //get public ShearType
+
+      Category newPublicCategory = Category.builder()
+              .categoryName(publicCategoryDto.getCategoryName())
+              .buddyId(publicCategoryDto.getBuddyId())
+              .shareTypeCd(shareType)
+              .userId(userId)
+              .build();
+
+      return categoryRepository.save(newPublicCategory);
+    } catch (Exception e) {
+      System.out.println("e");
+      throw new Exception(e);
+    }
+  }
+
+  public List<Tuple> findMyPrivateCategories() throws Exception {
     try {
       Long userId = (long) 1234; //getUserId;
       Long shareCode = (long) 10;//getShareCode
@@ -56,7 +96,7 @@ public class CategoryService {
     }
   }
 
-  public List<Tuple> findMyBuddyGroup() throws Exception {
+  public List<Tuple> findMyBuddyCategories() throws Exception {
     try {
       Long userId = (long) 1234; //getUserId;
       Long shareCode = (long) 20; //getShareCode
@@ -71,8 +111,28 @@ public class CategoryService {
 
   //TODO: [get] 특정 버디 들어갔을때 해당하는 폴더들 조회
 
-  //TODO : [put/delete] 특정 버디에 속해있으면 누구든 폴더명 편집/삭제 가능 ? > 가능하면 editorId 있어야할듯
-  // 삭제 시 내부 링크들도 전체 삭제됨
+  public Category updateCategory(Long id, CategoryDto.Update updateCategoryDto) throws Exception {
+    try {
 
+      Long userId = (long) 1234; //getUserId;
+      Category category = categoryRepository.findCategoryById(id);
+
+      //개인
+      Category existCategory;
+      if (category.getBuddyId() == null) {
+        existCategory = categoryRepository.findExistPrivateCategory(updateCategoryDto, userId);
+      } else {
+        //버디
+        existCategory = categoryRepository.findExistBuddyCategory(updateCategoryDto, category.getBuddyId(), userId);
+      }
+
+      existCategory.updateCategory(updateCategoryDto);
+      return categoryRepository.save(existCategory);
+    } catch (Exception e) {
+      System.out.println("e");
+      throw new Exception(e);
+    }
+  }
+  //TODO: 삭제 시 내부 링크들도 전체 삭제됨
 
 }

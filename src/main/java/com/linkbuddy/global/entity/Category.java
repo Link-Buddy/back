@@ -1,5 +1,6 @@
 package com.linkbuddy.global.entity;
 
+import com.linkbuddy.domain.category.CategoryDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +33,7 @@ public class Category {
   private Long id;
 
   @Column(name = "group_name", nullable = false, length = 50)
-  private String groupName;
+  private String categoryName;
 
   @Column(name = "file_id", nullable = true)
   private Long fileId;
@@ -59,10 +60,15 @@ public class Category {
   private Timestamp updatedAt;
 
   @Builder
-  public Category(String groupName, Long shareTypeCd, Long userId, Long buddyId) {
-    this.groupName = groupName;
+  public Category(String categoryName, Long shareTypeCd, Long userId, Long buddyId) {
+    this.categoryName = categoryName;
     this.shareTypeCd = shareTypeCd;
     this.userId = userId;
     this.buddyId = buddyId;
+  }
+
+  public void updateCategory(CategoryDto.Update updateDto) {
+    this.categoryName = updateDto.getCategoryName();
+    this.fileId = updateDto.getFileId();
   }
 }

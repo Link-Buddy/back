@@ -22,6 +22,10 @@ public class QBuddyUser extends EntityPathBase<BuddyUser> {
 
     public static final QBuddyUser buddyUser = new QBuddyUser("buddyUser");
 
+    public final DateTimePath<java.sql.Timestamp> acceptDt = createDateTime("acceptDt", java.sql.Timestamp.class);
+
+    public final BooleanPath acceptTf = createBoolean("acceptTf");
+
     public final BooleanPath alertTf = createBoolean("alertTf");
 
     public final QBuddy buddy;

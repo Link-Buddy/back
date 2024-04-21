@@ -29,10 +29,6 @@ public class LinkService {
     }
   }
 
-  public Link save(Link link) {
-    linkRepository.save(link);
-    return link;
-  }
 
   public Link save(LinkDto.Create linkDto) throws Exception {
     try {
