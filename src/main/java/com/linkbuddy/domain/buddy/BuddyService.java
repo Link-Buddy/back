@@ -1,10 +1,8 @@
 package com.linkbuddy.domain.buddy;
 
 import com.linkbuddy.domain.buddy.dto.BuddyDTO;
-import com.linkbuddy.domain.buddy.dto.BuddyInterface;
 import com.linkbuddy.domain.buddy.repository.BuddyRepository;
-import com.linkbuddy.domain.buddy.repository.BuddyUserRepository;
-import com.linkbuddy.domain.user.dto.UserInterface;
+import com.linkbuddy.domain.buddyUser.repository.BuddyUserRepository;
 import com.linkbuddy.global.entity.Buddy;
 import com.linkbuddy.global.entity.BuddyUser;
 import jakarta.transaction.Transactional;
@@ -26,29 +24,45 @@ public class BuddyService {
     @Autowired
     private BuddyUserRepository buddyUserRepository;
 
-    public List<BuddyInterface> findAll(Long userId) {
-        List<BuddyInterface> buddyList = buddyUserRepository.findBuddyById(userId);
-        return buddyList;
-    }
+    /**
+     * 회원 버디 리스트 조회 (By userId)
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    public List<BuddyDTO.BuddyResponse> findAll(Long userId) throws Exception {
+        try {
+            List<BuddyDTO.BuddyResponse> buddyList = buddyRepository.findBuddyByUserId(userId);
+            return buddyList;
 
-    public List<UserInterface> findUserAll(Long buddyId) {
-        List<UserInterface> userList = buddyUserRepository.findUserByBuddyId(buddyId);
-        return userList;
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
     }
-
-    public Optional<Buddy> findById(Long id) {
-        Optional<Buddy> buddy = buddyRepository.findById(id);
-        log.info("buddy = {}", buddy);
-        return buddy;
-    }
-
 
     /**
+     * 버디 상세 조회 (By buddyId)
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public Optional<Buddy> findById(Long id) throws Exception {
+        try {
+            Optional<Buddy> buddy = buddyRepository.findById(id);
+            log.info("buddy = {}", buddy);
+            return buddy;
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    /**
+     * 버디 생성
      * @param buddy
      * @return
      * @throws Exception
      */
-    public BuddyUser save(BuddyDTO buddy) throws Exception {
+    public BuddyUser create(BuddyDTO buddy) throws Exception {
         try {
             // 현재시간
             LocalDateTime now = LocalDateTime.now();
@@ -76,22 +90,13 @@ public class BuddyService {
         }
     }
 
-    public BuddyUser saveBuddyUser(BuddyDTO buddy) throws Exception {
-        try {
-            BuddyUser newBuddyUser = BuddyUser.builder()
-                    .userId(buddy.getUserId())
-                    .buddyId(buddy.getBuddyId())
-                    .alertTf(true)
-                    .pinTf(false)
-                    .acceptTf(false)
-                    .build();
-            return buddyUserRepository.save(newBuddyUser);
-
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-    }
-
+    /**
+     * 버디 수정 (이름 수정)
+     * @param id
+     * @param buddyDTO
+     * @return
+     * @throws Exception
+     */
     @Transactional
     public Buddy update(Long id, BuddyDTO buddyDTO) throws Exception {
         try {
@@ -111,37 +116,15 @@ public class BuddyService {
         }
     }
 
-    @Transactional
-    public BuddyUser updateBuddyUser(Long id, BuddyDTO buddyDTO) throws Exception {
-        try {
-            // 현재시간
-            LocalDateTime now = LocalDateTime.now();
-
-            // 버디 회원 조회
-            BuddyUser buddyUser = buddyUserRepository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Not exist Buddy user Data"));
-            log.info("buddyUser = {}", buddyUser);
-
-            BuddyUser newBuddyUser = BuddyUser.builder()
-                    .userId(buddyUser.getUserId())
-                    .buddyId(buddyUser.getBuddyId())
-                    .alertTf(buddyDTO.getAlertTf() != null ? buddyDTO.getAlertTf() : buddyUser.getAlertTf())
-                    .pinTf(buddyDTO.getPinTf() != null ? buddyDTO.getPinTf() : buddyUser.getPinTf())
-                    .acceptTf(buddyDTO.getAcceptTf() != null ? buddyDTO.getAcceptTf() : buddyUser.getAcceptTf())
-                    .acceptDt(buddyDTO.getAcceptTf() != null ? Timestamp.valueOf(now) : buddyUser.getAcceptDt())
-                    .build();
-
-            buddyUser.update(newBuddyUser);
-            log.info("buddyUser after update = {}", buddyUser);
-            return buddyUser;
-
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-    }
+    /**
+     * 버디 삭제
+     * @param id
+     * @return
+     * @throws Exception
+     */
     public Boolean delete(Long id) throws Exception {
         try {
-            log.info("buddy user id= {}", id);
+            log.info("buddy id= {}", id);
             // buddyUser list 조회
             List<BuddyUser> buddyUserList =  buddyUserRepository.findBuddyUsersByBuddyId(id);
             if (buddyUserList.size() > 0) {
@@ -159,22 +142,4 @@ public class BuddyService {
         }
     }
 
-    public Boolean deleteBuddyUser(Long buddyId, Long userId) throws Exception {
-        try {
-            log.info("buddy user id= {}", buddyId);
-            log.info("user id= {}", userId);
-
-            BuddyUser buddyUser = buddyUserRepository.findBuddyUserByBuddyIdAndUserId(buddyId, userId);
-
-            if (buddyUser != null) {
-                buddyUserRepository.deleteById(buddyUser.getId());
-                return true;
-            } else {
-                throw new IllegalArgumentException("Not exist Buddy User Data");
-            }
-
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-    }
 }
