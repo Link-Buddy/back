@@ -32,7 +32,7 @@ public class Category {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "group_name", nullable = false, length = 50)
+  @Column(name = "category_name", nullable = false, length = 50)
   private String categoryName;
 
   @Column(name = "file_id", nullable = true)
