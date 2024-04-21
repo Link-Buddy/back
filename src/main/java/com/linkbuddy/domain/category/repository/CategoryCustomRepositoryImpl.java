@@ -34,7 +34,7 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
 
   @Override
   public List<Tuple> findMyPrivateCategories(Long userId, Long shareTypeCd) {
-    List<Tuple> result = query.select(category.id, category.groupName)
+    List<Tuple> result = query.select(category.id, category.categoryName)
             .from(category)
             .where(category.userId.eq(userId).and(category.shareTypeCd.eq(shareTypeCd)).and(category.deleteTf.eq(false)))
             .fetch();
@@ -45,7 +45,7 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
   @Override
   public List<Tuple> findMyBuddyCategories(Long shareTypeCd) {
 
-    List<Tuple> result = query.select(category.id, category.groupName, category.buddyId)
+    List<Tuple> result = query.select(category.id, category.categoryName, category.buddyId)
             .from(category)
             .where(category.shareTypeCd.eq(shareTypeCd).and(category.deleteTf.eq(false)))
             .fetch();
@@ -55,13 +55,14 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
 
   @Override
   public Category findExistBuddyCategory(CategoryDto.Update updateDto, Long buddyId, Long userId) {
-    Category result = (Category) query.select(category.id, category.groupName, category.updatedAt, category.fileId)
+    Category result = (Category) query.select(category.id, category.categoryName, category.updatedAt, category.fileId)
             .from(category)
             .leftJoin(buddyUser)
             .where(category.id.eq(updateDto.getId())
                     .and(category.deleteTf.eq(false))
                     .and(buddyUser.buddyId.eq(buddyId))
-                    .and(buddyUser.userId.eq(userId))).fetchOne();
+                    .and(buddyUser.userId.eq(userId)))
+            .fetchOne();
 
     if (result == null) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with id: " + updateDto.getId());
@@ -73,7 +74,7 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
 
   @Override
   public Category findExistPrivateCategory(CategoryDto.Update updateDto, Long userId) {
-    Category result = (Category) query.select(category.id, category.groupName, category.updatedAt, category.fileId)
+    Category result = (Category) query.select(category.id, category.categoryName, category.updatedAt, category.fileId)
             .from(category)
             .where(category.id.eq(updateDto.getId())
                     .and(category.deleteTf.eq(false))

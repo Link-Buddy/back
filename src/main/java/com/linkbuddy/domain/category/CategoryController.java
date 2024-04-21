@@ -50,7 +50,7 @@ public class CategoryController {
             .build());
   }
 
-  @PostMapping
+  @PostMapping("/my")
   public ResponseEntity createPrivateCategory(@RequestBody CategoryDto.CreatePrivate privateDto) throws Exception {
 
 
@@ -62,7 +62,7 @@ public class CategoryController {
             .build());
   }
 
-  @PostMapping
+  @PostMapping("/buddy")
   public ResponseEntity createPublicCategory(@RequestBody CategoryDto.CreatePublic publicDto) throws Exception {
 
     Category newCategory = categoryService.createBuddyCategory(publicDto);
