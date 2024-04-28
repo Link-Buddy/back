@@ -22,6 +22,10 @@ public class User {
     private String email;
 
     @Column(length = 255)
+    @Comment(value = "비밀번호")
+    private String password;
+
+    @Column(length = 255)
     @Comment(value = "이름")
     private String name;
 
