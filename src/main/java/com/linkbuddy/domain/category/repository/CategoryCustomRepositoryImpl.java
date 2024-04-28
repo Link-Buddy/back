@@ -1,11 +1,17 @@
 package com.linkbuddy.domain.category.repository;
 
 import com.linkbuddy.domain.category.CategoryDto;
+import com.linkbuddy.domain.category.QCategoryDto_BuddyCategory;
+import com.linkbuddy.domain.category.QCategoryDto_PrivateCategory;
 import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.QBuddyUser;
 import com.linkbuddy.global.entity.QCategory;
-import com.querydsl.core.Tuple;
+import com.linkbuddy.global.entity.QLink;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
@@ -29,12 +35,15 @@ import java.util.List;
 public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
   private final JPAQueryFactory query;
 
+  @PersistenceContext
+  private EntityManager entityManager;
   QCategory category = QCategory.category;
   QBuddyUser buddyUser = QBuddyUser.buddyUser;
+  QLink link = QLink.link;
 
   @Override
-  public List<Tuple> findMyPrivateCategories(Long userId, Long shareTypeCd) {
-    List<Tuple> result = query.select(category.id, category.categoryName)
+  public List<CategoryDto.PrivateCategory> findMyPrivateCategories(Long userId, Long shareTypeCd) {
+    List<CategoryDto.PrivateCategory> result = query.select(new QCategoryDto_PrivateCategory(category))
             .from(category)
             .where(category.userId.eq(userId).and(category.shareTypeCd.eq(shareTypeCd)).and(category.deleteTf.eq(false)))
             .fetch();
@@ -42,30 +51,34 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
     return result;
   }
 
-  @Override
-  public List<Tuple> findMyBuddyCategories(Long shareTypeCd) {
 
-    List<Tuple> result = query.select(category.id, category.categoryName, category.buddyId)
+  @Override
+  public List<CategoryDto.BuddyCategory> findMyBuddyCategoriesByBuddyId(Long userId, Long shareTypeCd, Long buddyId) {
+
+    List<CategoryDto.BuddyCategory> result = query.select(new QCategoryDto_BuddyCategory(category))
             .from(category)
-            .where(category.shareTypeCd.eq(shareTypeCd).and(category.deleteTf.eq(false)))
+            .leftJoin(buddyUser)
+            .where(category.shareTypeCd.eq(shareTypeCd)
+                    .and(category.deleteTf.eq(false))
+                    .and(buddyUser.buddyId.eq(buddyId))
+                    .and(buddyUser.userId.eq(userId)))
             .fetch();
 
     return result;
   }
 
   @Override
-  public Category findExistBuddyCategory(CategoryDto.Update updateDto, Long buddyId, Long userId) {
-    Category result = (Category) query.select(category.id, category.categoryName, category.updatedAt, category.fileId)
-            .from(category)
+  public Category findExistBuddyCategory(Long id, Long buddyId, Long userId) {
+    Category result = query.selectFrom(category)
             .leftJoin(buddyUser)
-            .where(category.id.eq(updateDto.getId())
+            .where(category.id.eq(id)
                     .and(category.deleteTf.eq(false))
                     .and(buddyUser.buddyId.eq(buddyId))
                     .and(buddyUser.userId.eq(userId)))
             .fetchOne();
 
     if (result == null) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with id: " + updateDto.getId());
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with id: " + id);
     }
 
     return result;
@@ -73,15 +86,14 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
 
 
   @Override
-  public Category findExistPrivateCategory(CategoryDto.Update updateDto, Long userId) {
-    Category result = (Category) query.select(category.id, category.categoryName, category.updatedAt, category.fileId)
-            .from(category)
-            .where(category.id.eq(updateDto.getId())
+  public Category findExistPrivateCategory(Long id, Long userId) {
+    Category result = query.selectFrom(category)
+            .where(category.id.eq(id)
                     .and(category.deleteTf.eq(false))
                     .and(category.userId.eq(userId))).fetchOne();
 
     if (result == null) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with id: " + updateDto.getId());
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with id: " + id);
     }
 
     return result;
@@ -95,6 +107,23 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with id: " + id);
     }
     return result;
+  }
+
+  @Override
+  @Transactional
+  public void deleteCategory(Long id) {
+    JPAUpdateClause updateCategory = query.update(category);
+    updateCategory.set(category.deleteTf, true)
+            .where(category.id.eq(id))
+            .execute();
+
+    JPAUpdateClause updateLink = query.update(link);
+    updateLink.set(link.deleteTf, true)
+            .where(link.categoryId.eq(id))
+            .execute();
+
+
+    entityManager.flush();
   }
 
 

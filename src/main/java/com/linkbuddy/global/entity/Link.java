@@ -30,8 +30,8 @@ public class Link {
   @Column(name = "link_url", nullable = false, length = 1024)
   private String linkUrl;
 
-  @Column(name = "link_group_id")
-  private Long linkGroupId;
+  @Column(name = "category_id")
+  private Long categoryId;
 
   @Column(name = "delete_tf")
   private Boolean deleteTf = false;
@@ -48,11 +48,11 @@ public class Link {
   private Long userId;
 
   @Builder
-  public Link(String name, String description, String linkUrl, Long linkGroupId, Long userId) {
+  public Link(String name, String description, String linkUrl, Long categoryId, Long userId) {
     this.name = name;
     this.description = description;
     this.linkUrl = linkUrl;
-    this.linkGroupId = linkGroupId;
+    this.categoryId = categoryId;
     this.userId = userId;
   }
 
@@ -63,7 +63,7 @@ public class Link {
   public void updateLink(LinkDto.Update updateLinkDto) {
     this.name = updateLinkDto.getName();
     this.description = updateLinkDto.getDescription();
-    this.linkGroupId = updateLinkDto.getLinkGroupId();
+    this.categoryId = updateLinkDto.getCategoryId();
     this.deleteTf = updateLinkDto.getDeleteTf();
   }
 

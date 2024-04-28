@@ -34,7 +34,7 @@ public class LinkDto {
     @NotBlank(message = "링크URL은 공백이 아니어야 합니다.")
     @NotNull
     private String linkUrl;
-    private Long linkGroupId;
+    private Long categoryId;
 
     @Builder
     public Create(Link l) {
@@ -42,7 +42,7 @@ public class LinkDto {
       this.name = l.getName();
       this.description = l.getDescription();
       this.linkUrl = l.getLinkUrl();
-      this.linkGroupId = l.getLinkGroupId();
+      this.categoryId = l.getCategoryId();
     }
   }
 
@@ -59,7 +59,7 @@ public class LinkDto {
     @NotNull
     private String description;
     @NotNull
-    private Long linkGroupId; // 새로운 링크 그룹 ID
+    private Long categoryId;
     @NotNull
     private Boolean deleteTf;
 
@@ -69,7 +69,7 @@ public class LinkDto {
       this.name = l.getName();
       this.description = l.getDescription();
       this.linkUrl = l.getLinkUrl();
-      this.linkGroupId = l.getLinkGroupId();
+      this.categoryId = l.getCategoryId();
       this.deleteTf = l.getDeleteTf();
     }
   }

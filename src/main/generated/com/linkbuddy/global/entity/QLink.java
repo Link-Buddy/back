@@ -19,6 +19,8 @@ public class QLink extends EntityPathBase<Link> {
 
     public static final QLink link = new QLink("link");
 
+    public final NumberPath<Long> categoryId = createNumber("categoryId", Long.class);
+
     public final DateTimePath<java.sql.Timestamp> createdAt = createDateTime("createdAt", java.sql.Timestamp.class);
 
     public final BooleanPath deleteTf = createBoolean("deleteTf");
@@ -26,8 +28,6 @@ public class QLink extends EntityPathBase<Link> {
     public final StringPath description = createString("description");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
-
-    public final NumberPath<Long> linkGroupId = createNumber("linkGroupId", Long.class);
 
     public final StringPath linkUrl = createString("linkUrl");
 

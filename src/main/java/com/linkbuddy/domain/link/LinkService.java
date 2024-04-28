@@ -1,6 +1,8 @@
 package com.linkbuddy.domain.link;
 
+import com.linkbuddy.domain.category.repository.CategoryRepository;
 import com.linkbuddy.domain.link.repository.LinkRepository;
+import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.Link;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,9 +13,11 @@ import java.util.List;
 public class LinkService {
   @Autowired
   private LinkRepository linkRepository;
+  @Autowired
+  private CategoryRepository categoryRepository;
 
   public List<Link> findAll() {
-    return linkRepository.findAll();
+    return linkRepository.findAllActive();
   }
 
   private Link findById(Long id) {
@@ -39,7 +43,7 @@ public class LinkService {
               .name(linkDto.getName())
               .description(linkDto.getDescription())
               .linkUrl(linkDto.getLinkUrl())
-              .linkGroupId(linkDto.getLinkGroupId())
+              .categoryId(linkDto.getCategoryId())
               .userId(userId)
               .build();
 
@@ -80,6 +84,40 @@ public class LinkService {
       linkRepository.save(existLink);
     } catch (Exception e) {
       System.out.println("e");
+      throw new Exception(e);
+    }
+  }
+
+  public void changeCategoryIdByIds(List<Long> linkIds, Long newCategoryId) throws Exception {
+    try {
+      Long userId = (long) 1234; //getUserId;
+      Long privateShareCd = (long) 10; //getShareCode
+      Long BuddyShareCd = (long) 10; //getShareCode
+
+      System.out.println(">>>>>>>>>>>>>>>>>>>>>" + linkIds.get(0));
+      Link link = linkRepository.findOneActive(linkIds.get(0));
+      Long oldCategoryId = link.getCategoryId();
+
+      Category getCategory = categoryRepository.findCategoryById(oldCategoryId);
+      Long oldBuddyId = getCategory.getBuddyId();
+
+      System.out.println(">>>>>>>>>>>>>>>>>>>>>" + getCategory.getBuddyId() + getCategory.getId());
+      Category existCategory;
+      if (getCategory.getBuddyId() == null) {
+        existCategory = categoryRepository.findExistPrivateCategory(newCategoryId, userId);
+        if (existCategory != null) {
+          linkRepository.changePrivateCategoryIdByIds(linkIds, newCategoryId, userId, privateShareCd);
+        }
+      } else {
+        //버디
+        existCategory = categoryRepository.findExistBuddyCategory(newCategoryId, getCategory.getBuddyId(), userId);
+        if (existCategory != null) {
+          linkRepository.changeBuddyCategoryIdByIds(linkIds, oldBuddyId, newCategoryId, BuddyShareCd);
+        }
+      }
+
+    } catch (Exception e) {
+      System.out.println("e" + e);
       throw new Exception(e);
     }
   }
