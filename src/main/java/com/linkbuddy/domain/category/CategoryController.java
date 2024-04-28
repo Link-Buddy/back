@@ -5,6 +5,7 @@ import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
 import com.querydsl.core.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,8 +31,7 @@ public class CategoryController {
 
   @GetMapping("my")
   public ResponseEntity getMyPrivateCategory() throws Exception {
-    //TODO : Tuple이 아니라 PrivateCategoryDTO로 변경
-    List<Tuple> privateCategories = categoryService.findMyPrivateCategories();
+    List<CategoryDto.PrivateCategory> privateCategories = categoryService.findMyPrivateCategories();
 
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
@@ -40,9 +40,8 @@ public class CategoryController {
   }
 
   @GetMapping("buddy")
-  public ResponseEntity getMyPublicCategory() throws Exception {
-    //TODO : Tuple이 아니라 PublicCategoryDTO로 변경
-    List<Tuple> boddyCategories = categoryService.findMyBuddyCategories();
+  public ResponseEntity getMyBuddyCategory(@RequestParam("buddyId") Long buddyId) throws Exception {
+    List<CategoryDto.BuddyCategory> boddyCategories = categoryService.findMyBuddyCategoriesByBuddyId(buddyId);
 
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
@@ -62,19 +61,19 @@ public class CategoryController {
             .build());
   }
 
-  @PostMapping("/buddy")
-  public ResponseEntity createPublicCategory(@RequestBody CategoryDto.CreatePublic publicDto) throws Exception {
+  @PostMapping
+  public ResponseEntity createBuddyCategory(@RequestBody CategoryDto.CreateBuddy buddyCategoryDto) throws Exception {
 
-    Category newCategory = categoryService.createBuddyCategory(publicDto);
+    Category newCategory = categoryService.createBuddyCategory(buddyCategoryDto);
 
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
-            .data(new CategoryDto.CreatePublic(newCategory))
+            .data(new CategoryDto.CreateBuddy(newCategory))
             .build());
   }
 
   @PutMapping("{id}")
-  public ResponseEntity updateLink(@PathVariable("id") Long id, @RequestBody CategoryDto.Update updateDto) throws Exception {
+  public ResponseEntity updateCategory(@PathVariable("id") Long id, @RequestBody CategoryDto.Update updateDto) throws Exception {
 
     Category updatedCategory = categoryService.updateCategory(id, updateDto);
 
@@ -83,4 +82,16 @@ public class CategoryController {
             .data(new CategoryDto.Update(updatedCategory))
             .build());
   }
+
+  @DeleteMapping("{id}")
+  public ResponseEntity deleteCategory(@PathVariable("id") Long id) throws Exception {
+
+    categoryService.deleteCategory(id);
+
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data("")
+            .build());
+  }
+
 }

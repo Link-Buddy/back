@@ -1,6 +1,7 @@
 package com.linkbuddy.domain.category;
 
 import com.linkbuddy.global.entity.Category;
+import com.querydsl.core.annotations.QueryProjection;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -34,6 +35,7 @@ public class CategoryDto {
     private Timestamp createdAt;
 
     @Builder
+    @QueryProjection
     public PrivateCategory(Category c) {
       this.id = c.getId();
       this.categoryName = c.getCategoryName();
@@ -61,7 +63,7 @@ public class CategoryDto {
 
   @Getter
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
-  public static class PublicCategory {
+  public static class BuddyCategory {
     private Long id;
     private String categoryName;
     private Long fileId;
@@ -71,7 +73,8 @@ public class CategoryDto {
     private Timestamp createdAt;
 
     @Builder
-    public PublicCategory(Category c) {
+    @QueryProjection
+    public BuddyCategory(Category c) {
       this.id = c.getId();
       this.categoryName = c.getCategoryName();
       this.fileId = c.getFileId();
@@ -84,7 +87,7 @@ public class CategoryDto {
 
   @Getter
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
-  public static class CreatePublic {
+  public static class CreateBuddy {
 
     @NotBlank(message = "폴더명 공백이 아니어야 합니다.")
     @Length(max = 50, message = "글자 수는 최대 50자 이하여야 합니다.")
@@ -96,7 +99,7 @@ public class CategoryDto {
     private Long buddyId;
 
     @Builder
-    public CreatePublic(Category c) {
+    public CreateBuddy(Category c) {
       this.categoryName = c.getCategoryName();
       this.buddyId = c.getBuddyId();
     }

@@ -66,6 +66,17 @@ public class LinkController {
             .build());
   }
 
+  @PutMapping("change-category")
+  public ResponseEntity changeCategory(@RequestParam("categoryId") Long newCategoryId, @RequestBody List<Long> linkIds) throws Exception {
+
+    System.out.println(">>>><<<<" + newCategoryId + linkIds.get(0));
+    linkService.changeCategoryIdByIds(linkIds, newCategoryId);
+
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .build());
+  }
+
   private Long getCurrentUserId() {
     return (long) 1234;
     //userServic.getCurrentUserId();

@@ -65,27 +65,27 @@ public class CategoryService {
     }
   }
 
-  public Category createBuddyCategory(CategoryDto.CreatePublic publicCategoryDto) throws Exception {
+  public Category createBuddyCategory(CategoryDto.CreateBuddy buddyCategoryDto) throws Exception {
     try {
 
       Long userId = (long) 1234; //getUserId;
       Long shareType = (long) 20; //get public ShearType
 
-      Category newPublicCategory = Category.builder()
-              .categoryName(publicCategoryDto.getCategoryName())
-              .buddyId(publicCategoryDto.getBuddyId())
+      Category newBuddyCategory = Category.builder()
+              .categoryName(buddyCategoryDto.getCategoryName())
+              .buddyId(buddyCategoryDto.getBuddyId())
               .shareTypeCd(shareType)
               .userId(userId)
               .build();
 
-      return categoryRepository.save(newPublicCategory);
+      return categoryRepository.save(newBuddyCategory);
     } catch (Exception e) {
       System.out.println("e");
       throw new Exception(e);
     }
   }
 
-  public List<Tuple> findMyPrivateCategories() throws Exception {
+  public List<CategoryDto.PrivateCategory> findMyPrivateCategories() throws Exception {
     try {
       Long userId = (long) 1234; //getUserId;
       Long shareCode = (long) 10;//getShareCode
@@ -96,20 +96,18 @@ public class CategoryService {
     }
   }
 
-  public List<Tuple> findMyBuddyCategories() throws Exception {
+
+  public List<CategoryDto.BuddyCategory> findMyBuddyCategoriesByBuddyId(Long buddyId) throws Exception {
     try {
       Long userId = (long) 1234; //getUserId;
       Long shareCode = (long) 20; //getShareCode
 
-      //TODO: 해당 buddy에 해당 user가 포함되어있느지도 확인해야함
-      return categoryRepository.findMyBuddyCategories(shareCode);
+      return categoryRepository.findMyBuddyCategoriesByBuddyId(userId, shareCode, buddyId);
     } catch (Exception e) {
       System.out.println("e");
       throw new Exception(e);
     }
   }
-
-  //TODO: [get] 특정 버디 들어갔을때 해당하는 폴더들 조회
 
   public Category updateCategory(Long id, CategoryDto.Update updateCategoryDto) throws Exception {
     try {
@@ -117,13 +115,13 @@ public class CategoryService {
       Long userId = (long) 1234; //getUserId;
       Category category = categoryRepository.findCategoryById(id);
 
-      //개인
       Category existCategory;
       if (category.getBuddyId() == null) {
-        existCategory = categoryRepository.findExistPrivateCategory(updateCategoryDto, userId);
+        //개인
+        existCategory = categoryRepository.findExistPrivateCategory(id, userId);
       } else {
         //버디
-        existCategory = categoryRepository.findExistBuddyCategory(updateCategoryDto, category.getBuddyId(), userId);
+        existCategory = categoryRepository.findExistBuddyCategory(id, category.getBuddyId(), userId);
       }
 
       existCategory.updateCategory(updateCategoryDto);
@@ -133,6 +131,26 @@ public class CategoryService {
       throw new Exception(e);
     }
   }
-  //TODO: 삭제 시 내부 링크들도 전체 삭제됨
 
+  public void deleteCategory(Long id) throws Exception {
+    try {
+
+      Long userId = (long) 1234; //getUserId;
+      Category category = categoryRepository.findCategoryById(id);
+
+      //개인
+      Category existCategory;
+      if (category.getBuddyId() == null) {
+        existCategory = categoryRepository.findExistPrivateCategory(id, userId);
+      } else {
+        //버디
+        existCategory = categoryRepository.findExistBuddyCategory(id, category.getBuddyId(), userId);
+      }
+
+      categoryRepository.deleteCategory(existCategory.getId());
+    } catch (Exception e) {
+      System.out.println("e" + e);
+      throw new Exception(e);
+    }
+  }
 }
