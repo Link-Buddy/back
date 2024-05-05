@@ -77,8 +77,8 @@ public class BuddyService {
             BuddyUser newBuddyUser = BuddyUser.builder()
                     .userId(buddy.getUserId())
                     .buddyId(savedBuddy.getId())
-                    .alertTf(buddy.getAlertTf())
-                    .pinTf(buddy.getPinTf())
+                    .alertTf(true)
+                    .pinTf(false)
                     .acceptTf(true)
                     .acceptDt(Timestamp.valueOf(now))
                     .build();

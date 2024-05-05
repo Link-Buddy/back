@@ -1,7 +1,10 @@
 package com.linkbuddy.global.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.context.annotation.Description;
@@ -11,6 +14,7 @@ import java.sql.Timestamp;
 @Entity(name = "User")
 @Data
 @Description(value = "회원")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  //아무런 값도 갖지 않는 의미 없는 객체 생성을 막음
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,4 +53,12 @@ public class User {
     @Column(name = "deleted_at")
     @Comment(value = "탈퇴일시")
     private Timestamp deletedAt;
+
+    @Builder
+    public User(String email, String name, String password, Integer statusCd) {
+        this.email = email;
+        this.name = name;
+        this.password = password;
+        this.statusCd = statusCd;
+    }
 }

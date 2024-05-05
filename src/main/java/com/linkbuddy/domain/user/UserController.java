@@ -20,7 +20,7 @@ public class UserController {
      * @param user
      * @return
      */
-    @PostMapping
+    @PostMapping("/join")
     public ResponseEntity createUser(User user) throws Exception{
         User savedUser = userService.create(user);
         return ResponseEntity.ok(ResponseMessage.builder()
