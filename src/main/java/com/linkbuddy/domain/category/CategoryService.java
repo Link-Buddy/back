@@ -99,7 +99,7 @@ public class CategoryService {
 
   public List<CategoryDto.BuddyCategory> findMyBuddyCategoriesByBuddyId(Long buddyId) throws Exception {
     try {
-      Long userId = (long) 1234; //getUserId;
+      Long userId = (long) 1; //getUserId;
       Long shareCode = (long) 20; //getShareCode
 
       return categoryRepository.findMyBuddyCategoriesByBuddyId(userId, shareCode, buddyId);
@@ -112,7 +112,7 @@ public class CategoryService {
   public Category updateCategory(Long id, CategoryDto.Update updateCategoryDto) throws Exception {
     try {
 
-      Long userId = (long) 1234; //getUserId;
+      Long userId = (long) 1; //getUserId;
       Category category = categoryRepository.findCategoryById(id);
 
       Category existCategory;

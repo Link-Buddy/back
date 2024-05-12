@@ -6,12 +6,14 @@ import com.linkbuddy.global.util.StatusEnum;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RequestMapping("links")
 @RestController
+@Validated
 public class LinkController {
   @Autowired
   private LinkService linkService;
@@ -37,7 +39,7 @@ public class LinkController {
   }
 
   @PostMapping
-  public ResponseEntity createLink(@Valid @RequestBody LinkDto.Create createDto) throws Exception {
+  public ResponseEntity createLink(@RequestBody @Valid LinkDto.Create createDto) throws Exception {
 
     Link newLink = linkService.save(createDto);
 
@@ -46,6 +48,7 @@ public class LinkController {
             .data(new LinkDto.Create(newLink))
             .build());
   }
+
 
   @PutMapping("{id}")
   public ResponseEntity updateLink(@PathVariable("id") Long id, @RequestBody LinkDto.Update updateDto) throws Exception {
@@ -69,11 +72,10 @@ public class LinkController {
   @PutMapping("change-category")
   public ResponseEntity changeCategory(@RequestParam("categoryId") Long newCategoryId, @RequestBody List<Long> linkIds) throws Exception {
 
-    System.out.println(">>>><<<<" + newCategoryId + linkIds.get(0));
     linkService.changeCategoryIdByIds(linkIds, newCategoryId);
 
     return ResponseEntity.ok(ResponseMessage.builder()
-            .status(StatusEnum.OK)
+            .status(StatusEnum.OK).data("")
             .build());
   }
 

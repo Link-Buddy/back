@@ -25,34 +25,45 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class BuddyUserCustomRepositoryImpl implements BuddyUserCustomRepository {
-    private final JPAQueryFactory query;
-    QBuddyUser buddyUser = QBuddyUser.buddyUser;
-    QUser user = QUser.user;
+  private final JPAQueryFactory query;
+  QBuddyUser buddyUser = QBuddyUser.buddyUser;
+  QUser user = QUser.user;
 
-    @Override
-    public List<UserDTO.UserResponse> findUserByBuddyId(Long buddyId) {
-        List<UserDTO.UserResponse> userList = query.select(new QUserDTO_UserResponse(user.id, user.name, user.email))
-                .from(buddyUser)
-                .leftJoin(buddyUser.user, user)
-                .on(buddyUser.userId.eq(user.id))
-                .where(buddyUser.buddyId.eq(buddyId).and(buddyUser.acceptTf.eq(true)))
-                .fetch();
-        return userList;
-    }
+  @Override
+  public List<UserDTO.UserResponse> findUserByBuddyId(Long buddyId) {
+    List<UserDTO.UserResponse> userList = query.select(new QUserDTO_UserResponse(user.id, user.name, user.email))
+            .from(buddyUser)
+            .leftJoin(buddyUser.user, user)
+            .on(buddyUser.userId.eq(user.id))
+            .where(buddyUser.buddyId.eq(buddyId).and(buddyUser.acceptTf.eq(true)))
+            .fetch();
+    return userList;
+  }
 
-    @Override
-    public List<BuddyUser> findBuddyUsersByBuddyId(Long buddyId) {
-        List<BuddyUser> buddyUserList = query.selectFrom(buddyUser)
-                .where(buddyUser.buddyId.eq(buddyId)).fetch();
-        return buddyUserList;
-    }
+  @Override
+  public UserDTO.UserResponse existBuddyUser(Long buddyId, Long userId) {
+    UserDTO.UserResponse existResult = query.select(new QUserDTO_UserResponse(user.id, user.name, user.email))
+            .from(buddyUser)
+            .leftJoin(buddyUser.user, user)
+            .on(buddyUser.userId.eq(user.id))
+            .where(buddyUser.buddyId.eq(buddyId).and(buddyUser.userId.eq(userId)))
+            .fetchOne();
+    return existResult;
+  }
 
-    @Override
-    public BuddyUser findBuddyUserByBuddyIdAndUserId(Long buddyId, Long userId) {
-        BuddyUser buddyUserResult = query.selectFrom(buddyUser)
-                .where(buddyUser.buddyId.eq(buddyId).and(buddyUser.userId.eq(userId)))
-                .fetchOne();
-        return buddyUserResult;
-    }
+  @Override
+  public List<BuddyUser> findBuddyUsersByBuddyId(Long buddyId) {
+    List<BuddyUser> buddyUserList = query.selectFrom(buddyUser)
+            .where(buddyUser.buddyId.eq(buddyId)).fetch();
+    return buddyUserList;
+  }
+
+  @Override
+  public BuddyUser findBuddyUserByBuddyIdAndUserId(Long buddyId, Long userId) {
+    BuddyUser buddyUserResult = query.selectFrom(buddyUser)
+            .where(buddyUser.buddyId.eq(buddyId).and(buddyUser.userId.eq(userId)))
+            .fetchOne();
+    return buddyUserResult;
+  }
 
 }

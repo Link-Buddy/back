@@ -3,8 +3,9 @@ package com.linkbuddy.domain.link.repository;
 import com.linkbuddy.global.entity.Link;
 import com.linkbuddy.global.entity.QCategory;
 import com.linkbuddy.global.entity.QLink;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
@@ -37,30 +38,25 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
   }
 
   @Override
-  public Long changePrivateCategoryIdByIds(List<Long> ids, Long newCategoryId, Long userId, Long privateShareCd) {
-    long updatedLinks = query.update(link)
-            .set(link.categoryId, newCategoryId)
-            .where(link.categoryId.in(ids)
-                    .and(JPAExpressions.select(category.shareTypeCd)
-                            .from(category)
-                            .where(category.id.eq(newCategoryId)).eq(privateShareCd))
-                    .and(category.userId.eq(userId)))
+  @Transactional
+  public JPAUpdateClause changePrivateCategoryIdByIds(List<Long> ids, Long newCategoryId, Long userId) {
+
+    JPAUpdateClause updatedLinks = query.update(link);
+    updatedLinks.set(link.categoryId, newCategoryId)
+            .where(link.id.in(ids).and(link.userId.eq(userId)))
             .execute();
+
     return updatedLinks;
   }
 
   @Override
-  public Long changeBuddyCategoryIdByIds(List<Long> ids, Long oldBuddyId, Long newCategoryId, Long buddyShareCd) {
+  @Transactional
+  public JPAUpdateClause changeBuddyCategoryIdByIds(List<Long> ids, Long newCategoryId) {
 
-    long updatedLinks = query.update(link)
+    JPAUpdateClause updatedLinks = query.update(link);
+    updatedLinks
             .set(link.categoryId, newCategoryId)
-            .where(link.categoryId.in(ids)
-                    .and(JPAExpressions.select(category.buddyId) //query.selectFrom(category)
-                            .from(category)
-                            .where(category.id.eq(newCategoryId)).eq(oldBuddyId))
-                    .and(JPAExpressions.select(category.shareTypeCd)
-                            .from(category)
-                            .where(category.id.eq(newCategoryId)).eq(buddyShareCd)))
+            .where(link.id.in(ids))
             .execute();
     return updatedLinks;
   }

@@ -1,11 +1,15 @@
 package com.linkbuddy.domain.link;
 
+import com.linkbuddy.domain.buddyUser.repository.BuddyUserRepository;
 import com.linkbuddy.domain.category.repository.CategoryRepository;
 import com.linkbuddy.domain.link.repository.LinkRepository;
+import com.linkbuddy.domain.user.dto.UserDTO;
 import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.Link;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -15,6 +19,8 @@ public class LinkService {
   private LinkRepository linkRepository;
   @Autowired
   private CategoryRepository categoryRepository;
+  @Autowired
+  private BuddyUserRepository buddyUserRepository;
 
   public List<Link> findAll() {
     return linkRepository.findAllActive();
@@ -90,30 +96,35 @@ public class LinkService {
 
   public void changeCategoryIdByIds(List<Long> linkIds, Long newCategoryId) throws Exception {
     try {
-      Long userId = (long) 1234; //getUserId;
+      Long userId = (long) 1; //getUserId;
       Long privateShareCd = (long) 10; //getShareCode
-      Long BuddyShareCd = (long) 10; //getShareCode
+      Long BuddyShareCd = (long) 20; //getShareCode
 
-      System.out.println(">>>>>>>>>>>>>>>>>>>>>" + linkIds.get(0));
       Link link = linkRepository.findOneActive(linkIds.get(0));
       Long oldCategoryId = link.getCategoryId();
+      Category oldCategory = categoryRepository.findCategoryById(oldCategoryId);
+      Category newCategory = categoryRepository.findCategoryById(newCategoryId);
+      Long oldBuddyId = oldCategory.getBuddyId();
+      Long oldUserId = oldCategory.getUserId();
 
-      Category getCategory = categoryRepository.findCategoryById(oldCategoryId);
-      Long oldBuddyId = getCategory.getBuddyId();
-
-      System.out.println(">>>>>>>>>>>>>>>>>>>>>" + getCategory.getBuddyId() + getCategory.getId());
       Category existCategory;
-      if (getCategory.getBuddyId() == null) {
-        existCategory = categoryRepository.findExistPrivateCategory(newCategoryId, userId);
-        if (existCategory != null) {
-          linkRepository.changePrivateCategoryIdByIds(linkIds, newCategoryId, userId, privateShareCd);
+      if (oldCategory.getShareTypeCd().equals(privateShareCd)) {
+        if (!oldUserId.equals(userId)) {
+          throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
         }
+        categoryRepository.findExistPrivateCategory(newCategoryId, userId);
+        linkRepository.changePrivateCategoryIdByIds(linkIds, newCategoryId, userId);
+
       } else {
-        //버디
-        existCategory = categoryRepository.findExistBuddyCategory(newCategoryId, getCategory.getBuddyId(), userId);
-        if (existCategory != null) {
-          linkRepository.changeBuddyCategoryIdByIds(linkIds, oldBuddyId, newCategoryId, BuddyShareCd);
+        if (!oldBuddyId.equals(newCategory.getBuddyId())) {
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "같은 버디 내에서만 카테고리 이동 가능");
         }
+        UserDTO.UserResponse existBuddyUser = buddyUserRepository.existBuddyUser(newCategory.getBuddyId(), userId);
+        if (existBuddyUser == null) {
+          throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
+        }
+        categoryRepository.findExistBuddyCategory(newCategoryId, oldCategory.getBuddyId(), userId);
+        linkRepository.changeBuddyCategoryIdByIds(linkIds, newCategoryId);
       }
 
     } catch (Exception e) {
