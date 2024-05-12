@@ -54,10 +54,10 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
 
   @Override
   public List<CategoryDto.BuddyCategory> findMyBuddyCategoriesByBuddyId(Long userId, Long shareTypeCd, Long buddyId) {
-
+    
     List<CategoryDto.BuddyCategory> result = query.select(new QCategoryDto_BuddyCategory(category))
             .from(category)
-            .leftJoin(buddyUser)
+            .leftJoin(buddyUser).on(category.buddyId.eq(buddyUser.buddyId))
             .where(category.shareTypeCd.eq(shareTypeCd)
                     .and(category.deleteTf.eq(false))
                     .and(buddyUser.buddyId.eq(buddyId))
@@ -70,7 +70,7 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
   @Override
   public Category findExistBuddyCategory(Long id, Long buddyId, Long userId) {
     Category result = query.selectFrom(category)
-            .leftJoin(buddyUser)
+            .leftJoin(buddyUser).on(category.buddyId.eq(buddyUser.buddyId))
             .where(category.id.eq(id)
                     .and(category.deleteTf.eq(false))
                     .and(buddyUser.buddyId.eq(buddyId))

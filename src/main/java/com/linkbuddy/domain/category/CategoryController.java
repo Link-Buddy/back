@@ -61,7 +61,7 @@ public class CategoryController {
             .build());
   }
 
-  @PostMapping
+  @PostMapping("/buddy")
   public ResponseEntity createBuddyCategory(@RequestBody CategoryDto.CreateBuddy buddyCategoryDto) throws Exception {
 
     Category newCategory = categoryService.createBuddyCategory(buddyCategoryDto);

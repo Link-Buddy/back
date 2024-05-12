@@ -1,6 +1,8 @@
 package com.linkbuddy.domain.link.repository;
 
 import com.linkbuddy.global.entity.Link;
+import com.querydsl.jpa.impl.JPAUpdateClause;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
@@ -21,9 +23,9 @@ public interface LinkCustomRepository {
 
   Link findOneActive(Long id);
 
-  Long changePrivateCategoryIdByIds(List<Long> ids, Long newCategoryId, Long userId, Long privateShareCd);
-
-  Long changeBuddyCategoryIdByIds(List<Long> ids, Long oldBuddyId, Long newCategoryId, Long buddyId);
+  JPAUpdateClause changePrivateCategoryIdByIds(List<Long> ids, Long newCategoryId, Long userId);
+  
+  JPAUpdateClause changeBuddyCategoryIdByIds(List<Long> ids, Long newCategoryId);
 
 
   //해당 폴더 내의 모든 링크들

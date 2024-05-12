@@ -22,17 +22,16 @@ import org.hibernate.validator.constraints.Length;
 public class LinkDto {
 
   @Getter
-  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  @NoArgsConstructor
+  @AllArgsConstructor
   public static class Create {
     private Long id;
 
     @NotBlank(message = "이름은 공백이 아니어야 합니다.")
     @Length(max = 255, message = "글자 수는 최대 255자 이하여야 합니다.")
-    @NotNull
     private String name;
     private String description;
     @NotBlank(message = "링크URL은 공백이 아니어야 합니다.")
-    @NotNull
     private String linkUrl;
     private Long categoryId;
 
