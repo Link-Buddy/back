@@ -1,5 +1,7 @@
 package com.linkbuddy.domain.user;
 
+import com.linkbuddy.global.auth.JwtToken;
+import com.linkbuddy.global.auth.SecurityUtil;
 import com.linkbuddy.global.entity.User;
 import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
@@ -12,40 +14,58 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("user")
 public class UserController {
-    @Autowired
-    UserService userService;
+  @Autowired
+  UserService userService;
 
-    /**
-     * 회원 등록
-     * @param user
-     * @return
-     */
-    @PostMapping("/join")
-    public ResponseEntity createUser(User user) throws Exception{
-        User savedUser = userService.create(user);
-        return ResponseEntity.ok(ResponseMessage.builder()
-                .status(StatusEnum.OK)
-                .data(savedUser)
-                .build());
+  /**
+   * 회원 등록
+   *
+   * @param user
+   * @return
+   */
+  @PostMapping("/join")
+  public ResponseEntity createUser(User user) throws Exception {
+    User savedUser = userService.create(user);
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(savedUser)
+            .build());
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity loginUser(User user) throws Exception {
+    log.info("user data = {}", user);
+
+    JwtToken jwtToken = userService.signIn(user.getEmail(), user.getPassword());
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(jwtToken)
+            .build());
+  }
+
+  @PostMapping("/test")
+  public String test() {
+    return SecurityUtil.getCurrentUsername();
+  }
+
+  /**
+   * 회원 조회
+   *
+   * @param email
+   * @return
+   * @throws Exception
+   */
+  @GetMapping
+  public ResponseEntity getUser(@RequestParam(value = "email") String email) throws Exception {
+    User user = userService.find(email);
+    log.info("user data = {}", user);
+
+    if (user == null) {
+      return ResponseEntity.notFound().build();
     }
-
-    /**
-     * 회원 조회
-     * @param email
-     * @return
-     * @throws Exception
-     */
-    @GetMapping
-    public ResponseEntity getUser(@RequestParam(value = "email") String email) throws Exception {
-        User user = userService.find(email);
-        log.info("user data = {}", user);
-
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(ResponseMessage.builder()
-                .status(StatusEnum.OK)
-                .data(user)
-                .build());
-    }
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(user)
+            .build());
+  }
 }

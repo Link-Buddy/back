@@ -1,5 +1,6 @@
 package com.linkbuddy.domain.link;
 
+import com.linkbuddy.global.auth.SecurityUtil;
 import com.linkbuddy.global.entity.Link;
 import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
@@ -49,6 +50,10 @@ public class LinkController {
             .build());
   }
 
+  @PostMapping("/testt")
+  public String test() {
+    return SecurityUtil.getCurrentUsername();
+  }
 
   @PutMapping("{id}")
   public ResponseEntity updateLink(@PathVariable("id") Long id, @RequestBody LinkDto.Update updateDto) throws Exception {
