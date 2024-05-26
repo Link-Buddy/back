@@ -1,5 +1,8 @@
 package com.linkbuddy.domain.user;
 
+import com.linkbuddy.domain.user.dto.SignInDTO;
+import com.linkbuddy.domain.user.dto.UserDTO;
+import com.linkbuddy.global.config.jwt.JwtToken;
 import com.linkbuddy.global.entity.User;
 import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
@@ -47,5 +50,17 @@ public class UserController {
                 .status(StatusEnum.OK)
                 .data(user)
                 .build());
+    }
+
+    @PostMapping("/signIn")
+    public JwtToken signIn(@RequestBody SignInDTO signInDTO) {
+        String email = signInDTO.getEmail();
+        String password = signInDTO.getPassword();
+
+        JwtToken jwtToken = userService.signIn(email, password);
+        log.info("req email = {}, password = {}", email, password);
+        log.info("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
+
+        return jwtToken;
     }
 }

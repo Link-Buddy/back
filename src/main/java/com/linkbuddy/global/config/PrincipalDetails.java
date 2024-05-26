@@ -2,6 +2,7 @@ package com.linkbuddy.global.config;
 
 import com.linkbuddy.domain.user.UserService;
 import com.linkbuddy.global.entity.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
  * 2024-04-27        admin       최초 생성
  */
 @Component
+@Slf4j
 public class PrincipalDetails implements UserDetailsService {
     private final UserService userService;
 
