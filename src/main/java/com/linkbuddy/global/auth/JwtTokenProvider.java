@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -40,25 +41,30 @@ public class JwtTokenProvider {
   public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
     byte[] keyBytes = Decoders.BASE64.decode(secretKey);
     this.key = Keys.hmacShaKeyFor(keyBytes);
+    log.info("this.key=========================11111" + key);
   }
 
 
   // Member 정보를 가지고 AccessToken, RefreshToken을 생성하는 메서드
-  public JwtToken generateJwtToken(Authentication authentication) {
+  public JwtToken generateJwtToken(String email) {
 
-    // 권한 가져오기
-    String authorities = authentication.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.joining(","));
+//    log.info("authoritie1111" + authentication.getAuthorities());
+//    log.info("authoritie2222" + authentication.getPrincipal());
+//    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//    // 권한 가져오기
+//    String authorities = authentication.getAuthorities().stream()
+//            .map(GrantedAuthority::getAuthority)
+//            .collect(Collectors.joining(","));
 
+    // log.info("REREauthorities" + authorities);
     long now = (new Date()).getTime();
-    log.info("authorities", authorities);
+    log.info("this.key=========================" + key);
     // Access Token 생성
     long accessTokenValidity = 60 * 60 * 1000L;
     Date accessTokenExpiresIn = new Date(now + accessTokenValidity); //한시간
     String accessToken = Jwts.builder()
-            .setSubject(authentication.getName())
-            .claim("auth", authorities)
+            .setSubject(email)
+            //        .claim("auth", authorities)
             .setExpiration(accessTokenExpiresIn)
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
@@ -82,30 +88,32 @@ public class JwtTokenProvider {
   public Authentication getAuthentication(String accessToken) {
     // Jwt 토큰 복호화
     Claims claims = parseClaims(accessToken);
-    log.info("==============");
-    log.info((String) claims.get("auth"));
-    if (claims.get("auth") == null) {
-      throw new RuntimeException("권한 정보가 없는 토큰입니다.");
-    }
-
-    Collection<? extends GrantedAuthority> authorities =
-            Arrays.stream(claims.get("auth").toString().split(","))
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
+    String email = claims.getSubject();
+    log.info("==============" + claims + email);
+//    log.info(claims.get("auth").toString());
+//
+//    Collection<? extends GrantedAuthority> authorities =
+//            Arrays.stream(claims.get("auth").toString().split(","))
+//                    .map(SimpleGrantedAuthority::new)
+//                    .collect(Collectors.toList());
 
     // UserDetails 객체를 만들어서 Authentication return
     // UserDetails: interface, User: UserDetails를 구현한 class
-    UserDetails principal = new User(claims.getSubject(), "", authorities);
-    return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    UserDetails principal = new User(claims.getSubject(), "", new ArrayList<>());
+    log.info("==============1111" + principal.getAuthorities());
+    return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
   }
 
   // 토큰 정보를 검증하는 메서드
   public boolean validateToken(String token) {
     try {
+      log.info("222>>>" + key);
       Jwts.parserBuilder()
               .setSigningKey(key)
               .build()
               .parseClaimsJws(token);
+
+
       return true;
     } catch (SecurityException | MalformedJwtException e) {
       log.info("Invalid JWT Token", e);
@@ -115,6 +123,9 @@ public class JwtTokenProvider {
       log.info("Unsupported JWT Token", e);
     } catch (IllegalArgumentException e) {
       log.info("JWT claims string is empty.", e);
+    } catch (Exception e) {
+
+      log.info(">>>ERRE>>>", e);
     }
     return false;
   }
