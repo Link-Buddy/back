@@ -20,7 +20,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-application-DB.properties
+application-secret.properties
 
 .idea
 *.iws
