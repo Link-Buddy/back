@@ -15,52 +15,64 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("user")
 public class UserController {
-    @Autowired
-    UserService userService;
+  @Autowired
+  UserService userService;
 
-    /**
-     * 회원 등록
-     * @param user
-     * @return
-     */
-    @PostMapping("/join")
-    public ResponseEntity createUser(User user) throws Exception{
-        User savedUser = userService.create(user);
-        return ResponseEntity.ok(ResponseMessage.builder()
-                .status(StatusEnum.OK)
-                .data(savedUser)
-                .build());
+  /**
+   * 회원 등록
+   *
+   * @param user
+   * @return
+   */
+  @PostMapping("/join")
+  public ResponseEntity createUser(User user) throws Exception {
+    User savedUser = userService.create(user);
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(savedUser)
+            .build());
+  }
+
+  @GetMapping("/loginSuccess")
+  @ResponseBody
+  public ResponseEntity loginSuccess() {
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data("login success")
+            .build());
+    
+  }
+
+  /**
+   * 회원 조회
+   *
+   * @param email
+   * @return
+   * @throws Exception
+   */
+  @GetMapping
+  public ResponseEntity getUser(@RequestParam(value = "email") String email) throws Exception {
+    User user = userService.find(email);
+    log.info("user data = {}", user);
+
+    if (user == null) {
+      return ResponseEntity.notFound().build();
     }
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(user)
+            .build());
+  }
 
-    /**
-     * 회원 조회
-     * @param email
-     * @return
-     * @throws Exception
-     */
-    @GetMapping
-    public ResponseEntity getUser(@RequestParam(value = "email") String email) throws Exception {
-        User user = userService.find(email);
-        log.info("user data = {}", user);
+  @PostMapping("/signIn")
+  public JwtToken signIn(@RequestBody SignInDTO signInDTO) {
+    String email = signInDTO.getEmail();
+    String password = signInDTO.getPassword();
 
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(ResponseMessage.builder()
-                .status(StatusEnum.OK)
-                .data(user)
-                .build());
-    }
+    JwtToken jwtToken = userService.signIn(email, password);
+    log.info("req email = {}, password = {}", email, password);
+    log.info("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
 
-    @PostMapping("/signIn")
-    public JwtToken signIn(@RequestBody SignInDTO signInDTO) {
-        String email = signInDTO.getEmail();
-        String password = signInDTO.getPassword();
-
-        JwtToken jwtToken = userService.signIn(email, password);
-        log.info("req email = {}, password = {}", email, password);
-        log.info("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
-
-        return jwtToken;
-    }
+    return jwtToken;
+  }
 }

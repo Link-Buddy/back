@@ -14,5 +14,5 @@ import com.linkbuddy.global.entity.User;
  * 2024-04-20        admin       최초 생성
  */
 public interface UserCustomRepository {
-    User findByEmail(String email);
+  User customFindByEmail(String email);
 }
