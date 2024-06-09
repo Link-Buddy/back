@@ -20,14 +20,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class UserCustomRepositoryImpl implements UserCustomRepository {
-    private final JPAQueryFactory query;
-    QUser user = QUser.user;
+  private final JPAQueryFactory query;
+  QUser user = QUser.user;
 
-    @Override
-    public User findByEmail(String email) {
-        User userData = query.selectFrom(user)
-                .where(user.email.eq(email))
-                .fetchOne();
-        return userData;
-    }
+  @Override
+  public User customFindByEmail(String email) {
+    User userData = query.selectFrom(user)
+            .where(user.email.eq(email))
+            .fetchOne();
+    return userData;
+  }
 }

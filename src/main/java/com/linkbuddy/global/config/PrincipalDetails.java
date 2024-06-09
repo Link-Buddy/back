@@ -22,27 +22,28 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class PrincipalDetails implements UserDetailsService {
-    private final UserService userService;
 
-    public PrincipalDetails(UserService userService) {
-        this.userService = userService;
+  private final UserService userService;
+
+  public PrincipalDetails(UserService userService) {
+    this.userService = userService;
+  }
+
+  @Override
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    try {
+      User user = userService.find(email);
+      if (user == null) {
+        throw new UsernameNotFoundException("존재하지 않는 회원입니다.");
+      }
+
+      return org.springframework.security.core.userdetails.User.builder()
+              .username(user.getEmail())
+              .password(user.getPassword())   //비밀번호 체크는 알아서? 어떻게?
+              .build();
+
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        try {
-            User user = userService.find(email);
-            if (user == null) {
-                throw new UsernameNotFoundException("존재하지 않는 회원입니다.");
-            }
-
-            return org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getEmail())
-                    .password(user.getPassword())   //비밀번호 체크는 알아서? 어떻게?
-                    .build();
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+  }
 }
