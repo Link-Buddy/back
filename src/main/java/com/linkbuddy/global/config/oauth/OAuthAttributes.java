@@ -3,7 +3,9 @@ package com.linkbuddy.global.config.oauth;
 import com.linkbuddy.global.entity.User;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -19,6 +21,7 @@ import java.util.Map;
  */
 
 @Getter
+@Slf4j
 public class OAuthAttributes {
   private Map<String, Object> attributes;
   private String nameAttributeKey;
@@ -42,7 +45,7 @@ public class OAuthAttributes {
   public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
     return switch (registrationId) {
       case "google" -> ofGoogle(userNameAttributeName, attributes);
-      //  case "naver" -> ofNaver(userNameAttributeName, attributes);
+      case "naver" -> ofNaver(userNameAttributeName, attributes);
       default -> null;
     };
   }
@@ -60,10 +63,40 @@ public class OAuthAttributes {
             .build();
   }
 
+
+  private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
+    Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+    log.info("response = {}", response);
+    log.info("userNameAttributeName = {}", userNameAttributeName);
+    log.info("attributes = {}", attributes);
+
+    // 기준이 되는 user_name의 이름을 네이버에서는 response로 해야 한다.
+    Map<String, Object> userData = new HashMap<>();
+    userData.put("name", response.get("name"));
+    userData.put("email", response.get("email"));
+    userData.put("social", "naver");
+
+    Map<String, Object> newAttributes = new HashMap<>();
+    newAttributes.put("response", userData);
+
+
+    return OAuthAttributes.builder()
+            .name((String) response.get("name"))
+            .email((String) response.get("email"))
+            .social("naver")
+            .statusCd(10)
+//            .picture((String) response.get("profile_image"))
+            .attributes(newAttributes)
+            .nameAttributeKey(userNameAttributeName)
+            .build();
+  }
+
   public User toEntity() {
     return User.builder()
             .name(name)
             .email(email)
+            .social(social)
+            .statusCd(statusCd)
             .build();
   }
 }

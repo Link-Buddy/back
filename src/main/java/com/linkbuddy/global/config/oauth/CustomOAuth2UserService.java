@@ -47,6 +47,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     //2. OAuth2 서비스 id, 식별값 가져오기
     String registrationId = userRequest.getClientRegistration().getRegistrationId();//google
+    // Oauth2 로그인 진행 시 키가 되는 필드값 (naver, kakao => application.properties -> user_name_attribute)
     String userNameAttributeName
             = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName(); //sub (해당 유저 고유식별값)
 
@@ -56,16 +57,17 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
 
     //4. 회원가입 및 로그인
-    getOrSave(attributes);
+    getOrSave(attributes, registrationId);
 
     //사용자에게 권한을 부여 (USER)
     return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority("USER")), attributes.getAttributes(), attributes.getNameAttributeKey());
   }
 
-  private User getOrSave(OAuthAttributes attributes) {
+  private User getOrSave(OAuthAttributes attributes, String registrationId) {
+    log.info("getOrSave attributes = {}", attributes.toEntity());
     Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
     User user = (User) userRepository.findByEmail(attributes.getEmail())
-            .map(entity -> entity.update(attributes.getName()).updateLastLoggedAt(currentTimestamp))
+            .map(entity -> entity.update(attributes.getName()).updateLastLoggedAt(currentTimestamp, registrationId))
             .orElse(attributes.toEntity());
     return userRepository.save(user);
 

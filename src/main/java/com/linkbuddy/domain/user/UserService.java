@@ -69,7 +69,7 @@ public class UserService {
     //last_logged_at
     Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
     userRepository.findByEmail(email)
-            .map(entity -> entity.updateLastLoggedAt(currentTimestamp));
+            .map(entity -> entity.updateLastLoggedAt(currentTimestamp, null));
     return jwtToken;
   }
 }

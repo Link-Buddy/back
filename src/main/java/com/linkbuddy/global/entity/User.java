@@ -75,8 +75,9 @@ public class User {
     return this;
   }
 
-  public User updateLastLoggedAt(Timestamp lastLoggedAt) {
+  public User updateLastLoggedAt(Timestamp lastLoggedAt, String registrationId) {
     this.lastLoggedAt = lastLoggedAt;
+    this.social = registrationId;
     return this;
   }
 }
