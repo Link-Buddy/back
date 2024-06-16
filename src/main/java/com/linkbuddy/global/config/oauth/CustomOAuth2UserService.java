@@ -6,6 +6,7 @@ import com.linkbuddy.global.entity.User;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -31,6 +32,7 @@ import java.util.Map;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
   private final UserRepository userRepository;
 
@@ -44,13 +46,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     //OAuth2 서비스 id, name 가져오기
     String registrationId = userRequest.getClientRegistration().getRegistrationId();
+    // Oauth2 로그인 진행 시 키가 되는 필드값 (naver, kakao => application.properties -> user_name_attribute)
     String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
 
     Map<String, Object> originAttributes = oAuth2User.getAttributes();
 
     // 4. 유저 정보 dto 생성
     OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
-
 
     //5. 회원가입 및 로그인
     User user = getOrSave(attributes);
@@ -60,6 +62,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
   }
 
   private User getOrSave(OAuthAttributes attributes) {
+    log.info("getOrSave attributes = {}", attributes.toEntity());
     User user = (User) userRepository.findByEmail(attributes.getEmail())
             .map(entity -> entity.update(attributes.getName()))
             .orElse(attributes.toEntity());
