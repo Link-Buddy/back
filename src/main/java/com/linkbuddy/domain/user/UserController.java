@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 @RestController
 @RequestMapping("user")
@@ -35,12 +38,15 @@ public class UserController {
 
   @GetMapping("/loginSuccess")
   @ResponseBody
-  public ResponseEntity loginSuccess() {
+  public ResponseEntity loginSuccess(@RequestParam("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) {
+    Map<String, Object> response = new HashMap<>();
+    response.put("accessToken", accessToken);
+    response.put("refreshToken", refreshToken);
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
-            .data("login success")
+            .data(response)
             .build());
-    
+
   }
 
   /**

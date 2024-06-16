@@ -54,6 +54,11 @@ public class User {
   @Comment(value = "탈퇴일시")
   private Timestamp deletedAt;
 
+  @CreationTimestamp
+  @Column(name = "last_logged_at")
+  @Comment(value = "탈퇴일시")
+  private Timestamp lastLoggedAt;
+
   @Builder
   public User(String email, String name, String password, Integer statusCd, String social) {
     this.email = email;
@@ -64,9 +69,14 @@ public class User {
   }
 
 
-  public Object update(String name) {
+  public User update(String name) {
     this.name = name;
 
+    return this;
+  }
+
+  public User updateLastLoggedAt(Timestamp lastLoggedAt) {
+    this.lastLoggedAt = lastLoggedAt;
     return this;
   }
 }
