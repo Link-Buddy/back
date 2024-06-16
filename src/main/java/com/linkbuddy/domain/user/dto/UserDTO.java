@@ -16,26 +16,27 @@ import lombok.*;
  */
 @Data
 public class UserDTO {
+  private Long id;
+  private String email;
+  private String name;
+  private String social;
+  private Integer statusCd;
+  private Long fileId;
+
+
+  @Getter
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  public static class UserResponse {
     private Long id;
-    private String email;
     private String name;
-    private String social;
-    private Integer statusCd;
-    private Long fileId;
+    private String email;
 
-    @Getter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class UserResponse {
-        private Long id;
-        private String name;
-        private String email;
-
-        @Builder
-        @QueryProjection
-        public UserResponse(Long id, String name, String email) {
-            this.id = id;
-            this.name = name;
-            this.email = email;
-        }
+    @Builder
+    @QueryProjection
+    public UserResponse(Long id, String name, String email) {
+      this.id = id;
+      this.name = name;
+      this.email = email;
     }
+  }
 }

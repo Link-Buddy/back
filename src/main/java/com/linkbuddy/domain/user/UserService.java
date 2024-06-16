@@ -15,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+
 @Service
 @Slf4j
 public class UserService {
@@ -64,6 +66,10 @@ public class UserService {
     // 3. 검증에 성공하면 인증된 Authentication 객체 기반으로 JWT 토큰 생성
     JwtToken jwtToken = jwtTokenProvider.createToken(authentication);
 
+    //last_logged_at
+    Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+    userRepository.findByEmail(email)
+            .map(entity -> entity.updateLastLoggedAt(currentTimestamp, null));
     return jwtToken;
   }
 }

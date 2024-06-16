@@ -3,6 +3,7 @@ package com.linkbuddy.global.config;
 import com.linkbuddy.global.config.jwt.JwtAuthenticationFilter;
 import com.linkbuddy.global.config.jwt.JwtTokenProvider;
 import com.linkbuddy.global.config.oauth.CustomOAuth2UserService;
+import com.linkbuddy.global.config.oauth.OAuth2SuccessHandler;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ public class SecurityConfig {
   private JwtTokenProvider jwtTokenProvider;
   @Autowired
   private final CustomOAuth2UserService customOAuth2UserService;
+  private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
   @Bean
   PasswordEncoder passwordEncoder() {
@@ -63,7 +65,7 @@ public class SecurityConfig {
                             .userInfoEndpoint(c ->
                                     c.userService(customOAuth2UserService)
                             )
-                            .defaultSuccessUrl("/user/loginSuccess")
+                            .successHandler(oAuth2SuccessHandler)
                             .failureUrl("/user/loginFailure")
             )
 
