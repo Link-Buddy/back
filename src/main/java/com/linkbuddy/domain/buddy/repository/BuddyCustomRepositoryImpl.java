@@ -31,7 +31,7 @@ public class BuddyCustomRepositoryImpl implements BuddyCustomRepository {
 
     @Override
     public List<BuddyDTO.BuddyResponse> findBuddyByUserId(Long userId) {
-        List<BuddyDTO.BuddyResponse> buddyList = query.select(new QBuddyDTO_BuddyResponse(buddyUser.buddyId, buddy.name, buddyUser.alertTf, buddyUser.pinTf))
+        List<BuddyDTO.BuddyResponse> buddyList = query.select(new QBuddyDTO_BuddyResponse(buddyUser.id, buddyUser.buddyId, buddy.name, buddyUser.alertTf, buddyUser.pinTf))
                 .from(buddyUser)
                 .join(buddyUser.buddy, buddy)
                 .on(buddyUser.buddyId.eq(buddy.id))
