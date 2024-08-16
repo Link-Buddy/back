@@ -28,7 +28,7 @@ public class BuddyController {
      */
     @GetMapping
     public ResponseEntity getBuddyList(@RequestParam(value = "userId") Long userId) throws Exception {
-        log.debug("userId = {}", userId);
+        log.info("userId = {}", userId);
         List<BuddyDTO.BuddyResponse> buddyList = buddyService.findAll(userId);
         return ResponseEntity.ok(ResponseMessage.builder()
                 .status(StatusEnum.OK)

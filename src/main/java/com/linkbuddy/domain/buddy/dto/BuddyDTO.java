@@ -30,6 +30,7 @@ public class BuddyDTO {
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class BuddyResponse {
+        private Long id;
         private String name;
         private Long buddyId;
         private Boolean alertTf;
@@ -37,7 +38,8 @@ public class BuddyDTO {
 
         @Builder
         @QueryProjection
-        public BuddyResponse(Long buddyId, String name, Boolean alertTf, Boolean pinTf) {
+        public BuddyResponse(Long id, Long buddyId, String name, Boolean alertTf, Boolean pinTf) {
+            this.id = id;
             this.buddyId = buddyId;
             this.name = name;
             this.alertTf = alertTf;
