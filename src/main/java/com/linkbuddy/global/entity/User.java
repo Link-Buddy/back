@@ -45,6 +45,10 @@ public class User {
   @Comment(value = "프로필이미지파일ID")
   private Integer fileId;
 
+  @Column(length = 255)
+  @Comment(value = "리프레시 토큰")
+  private String refreshToken;
+
   @CreationTimestamp  //Insert 쿼리 발생시 현재 시간 값 적용
   @Column(name = "created_at")
   @Comment(value = "생성일시")
@@ -75,7 +79,8 @@ public class User {
     return this;
   }
 
-  public User updateLastLoggedAt(Timestamp lastLoggedAt, String registrationId) {
+  public User updateLastLoggedAt(String refreshToken, Timestamp lastLoggedAt, String registrationId) {
+    this.refreshToken = refreshToken;
     this.lastLoggedAt = lastLoggedAt;
     this.social = registrationId;
     return this;

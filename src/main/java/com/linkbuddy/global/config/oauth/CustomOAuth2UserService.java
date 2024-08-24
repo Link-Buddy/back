@@ -67,7 +67,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     log.info("getOrSave attributes = {}", attributes.toEntity());
     Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
     User user = (User) userRepository.findByEmail(attributes.getEmail())
-            .map(entity -> entity.update(attributes.getName()).updateLastLoggedAt(currentTimestamp, registrationId))
+            .map(entity -> entity.update(attributes.getName()).updateLastLoggedAt(null, currentTimestamp, registrationId))
             .orElse(attributes.toEntity());
     return userRepository.save(user);
 

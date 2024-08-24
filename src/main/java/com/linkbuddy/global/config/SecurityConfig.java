@@ -4,6 +4,7 @@ import com.linkbuddy.global.config.jwt.JwtAuthenticationFilter;
 import com.linkbuddy.global.config.jwt.JwtTokenProvider;
 import com.linkbuddy.global.config.oauth.CustomOAuth2UserService;
 import com.linkbuddy.global.config.oauth.OAuth2SuccessHandler;
+import com.linkbuddy.global.util.CustomAuthenticationEntryPoint;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,8 @@ public class SecurityConfig {
   @Autowired
   private final CustomOAuth2UserService customOAuth2UserService;
   private final OAuth2SuccessHandler oAuth2SuccessHandler;
+  private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
 
   @Bean
   PasswordEncoder passwordEncoder() {
@@ -68,6 +71,9 @@ public class SecurityConfig {
                             .successHandler(oAuth2SuccessHandler)
                             .failureUrl("/user/loginFailure")
             )
+            // Exception Handling 설정
+            .exceptionHandling(exception -> exception
+                    .authenticationEntryPoint(customAuthenticationEntryPoint)) // CustomAuthenticationEntryPoint 등록
 
             //JWT
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // UsernamePasswordAuthenticationFilter 전에 JWT 인증 필터 거치도록 설정
