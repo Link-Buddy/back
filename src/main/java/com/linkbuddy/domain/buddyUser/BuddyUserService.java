@@ -3,10 +3,13 @@ package com.linkbuddy.domain.buddyUser;
 import com.linkbuddy.domain.buddy.dto.BuddyDTO;
 import com.linkbuddy.domain.buddyUser.repository.BuddyUserRepository;
 import com.linkbuddy.domain.user.dto.UserDTO;
+import com.linkbuddy.domain.user.repository.UserRepository;
 import com.linkbuddy.global.entity.BuddyUser;
+import com.linkbuddy.global.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -29,6 +32,9 @@ import java.util.List;
 public class BuddyUserService {
     @Autowired
     private BuddyUserRepository buddyUserRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * 버디 참여 회원 리스트 조회
@@ -54,14 +60,22 @@ public class BuddyUserService {
      */
     public BuddyUser createBuddyUser(BuddyDTO buddy) throws Exception {
         try {
-            BuddyUser newBuddyUser = BuddyUser.builder()
-                    .userId(buddy.getUserId())
-                    .buddyId(buddy.getBuddyId())
-                    .alertTf(true)  //알림여부
-                    .pinTf(false)   //고정여부
-                    .acceptTf(false)    //수락여부
-                    .build();
-            return buddyUserRepository.save(newBuddyUser);
+            User user = userRepository.customFindByEmail(buddy.getEmail());
+
+            // 버디 회원 조회
+            BuddyUser buddyUser = buddyUserRepository.findBuddyUserByBuddyIdAndUserId(buddy.getBuddyId(), user.getId());
+            if (buddyUser == null) {
+                BuddyUser newBuddyUser = BuddyUser.builder()
+                        .userId(user.getId())
+                        .buddyId(buddy.getBuddyId())
+                        .alertTf(true)  //알림여부
+                        .pinTf(false)   //고정여부
+                        .acceptTf(false)    //수락여부
+                        .build();
+                return buddyUserRepository.save(newBuddyUser);
+            } else {
+                return null;
+            }
 
         } catch (Exception e) {
             throw new Exception(e);
