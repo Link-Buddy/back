@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 public class BuddyDTO {
     private Long id;
     private String name;
+    private String email;
     private Long userId;
     private Long buddyId;
     private Boolean alertTf;

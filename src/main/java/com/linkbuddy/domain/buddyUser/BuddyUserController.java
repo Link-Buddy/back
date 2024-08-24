@@ -54,9 +54,14 @@ public class BuddyUserController {
      * @throws Exception
      */
     @PostMapping
-    public ResponseEntity createBuddyUser(BuddyDTO buddy) throws Exception {
+    public ResponseEntity createBuddyUser(@RequestBody BuddyDTO buddy) throws Exception {
         log.info("buddy = {}", buddy);
         BuddyUser savedBuddyUser = buddyUserService.createBuddyUser(buddy);
+        if (savedBuddyUser == null) {
+            return ResponseEntity.ok(ResponseMessage.builder()
+                    .status(StatusEnum.CONFLICT)
+                    .build());
+        }
         return ResponseEntity.ok(ResponseMessage.builder()
                 .status(StatusEnum.OK)
                 .data(savedBuddyUser)
