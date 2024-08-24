@@ -7,13 +7,14 @@ import com.linkbuddy.global.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 
@@ -59,17 +60,26 @@ public class UserService {
 
   @Transactional
   public JwtToken signIn(String email, String password) {
-    // 1. Authentication 객체 생성
-    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
-    // 2. authenticate 메서드를 통해 요청된 회원정보에 대한 검증 -> loadUserByUsername 메서드 실행됨
-    Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-    // 3. 검증에 성공하면 인증된 Authentication 객체 기반으로 JWT 토큰 생성
-    JwtToken jwtToken = jwtTokenProvider.createToken(authentication);
+    try {
+      // 1. Authentication 객체 생성
+      UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+      // 2. authenticate 메서드를 통해 요청된 회원정보에 대한 검증 -> loadUserByUsername 메서드 실행됨
+      Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+      // 3. 검증에 성공하면 인증된 Authentication 객체 기반으로 JWT 토큰 생성
+      JwtToken jwtToken = jwtTokenProvider.createToken(authentication);
 
-    //last_logged_at
-    Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-    userRepository.findByEmail(email)
-            .map(entity -> entity.updateLastLoggedAt(currentTimestamp, null));
-    return jwtToken;
+      if (jwtToken == null || jwtToken.getAccessToken().isEmpty()) {
+        throw new IllegalArgumentException("JWT 토큰 생성에 실패했습니다.");
+      }
+      //last_logged_at
+      Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+      userRepository.findByEmail(email)
+              .map(entity -> entity.updateLastLoggedAt(jwtToken.getRefreshToken(), currentTimestamp, null));
+      return jwtToken;
+    } catch (AuthenticationException e) {
+      // 인증 실패 시 예외 발생
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password", e);
+    }
   }
+
 }
