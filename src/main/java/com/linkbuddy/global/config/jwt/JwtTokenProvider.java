@@ -130,9 +130,17 @@ public class JwtTokenProvider {
               .parseClaimsJws(token.replace("Bearer ", "").trim());
       return true;
     } catch (SignatureException e) {
+      log.info("Signature Error", e);
+    } catch (SecurityException | MalformedJwtException e) {
       log.info("Invalid JWT Token", e);
-      return false;
+    } catch (ExpiredJwtException e) {
+      log.info("Expired JWT Token", e);
+    } catch (UnsupportedJwtException e) {
+      log.info("Unsupported JWT Token", e);
+    } catch (IllegalArgumentException e) {  // 토큰이 올바른 형식이 X or 클레임이 비어 있는 경우 발생
+      log.info("JWT Claims string is empty", e);
     }
+    return false;
   }
 
   /**
