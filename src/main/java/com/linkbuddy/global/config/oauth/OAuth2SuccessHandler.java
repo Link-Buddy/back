@@ -2,6 +2,7 @@ package com.linkbuddy.global.config.oauth;
 
 import com.linkbuddy.global.config.jwt.JwtToken;
 import com.linkbuddy.global.config.jwt.JwtTokenProvider;
+import com.linkbuddy.global.util.CustomUserDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,8 +36,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();  // CustomUserDetails로 캐스팅
+    Long userId = userDetails.getId();
     //token 발급
-    JwtToken token = tokenProvider.createToken(authentication);
+    JwtToken token = tokenProvider.createToken(authentication, userId);
 
     String redirectUrl = UriComponentsBuilder.fromUriString(URI)
             .queryParam("accessToken", token.getAccessToken())
