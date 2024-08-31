@@ -1,8 +1,11 @@
 package com.linkbuddy.domain.buddyUser.repository;
 
+import com.linkbuddy.domain.buddy.dto.BuddyDTO;
+import com.linkbuddy.domain.buddy.dto.QBuddyDTO_BuddyInvitationResponse;
 import com.linkbuddy.domain.user.dto.QUserDTO_UserResponse;
 import com.linkbuddy.domain.user.dto.UserDTO;
 import com.linkbuddy.global.entity.BuddyUser;
+import com.linkbuddy.global.entity.QBuddy;
 import com.linkbuddy.global.entity.QBuddyUser;
 import com.linkbuddy.global.entity.QUser;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -27,6 +30,7 @@ import java.util.List;
 public class BuddyUserCustomRepositoryImpl implements BuddyUserCustomRepository {
   private final JPAQueryFactory query;
   QBuddyUser buddyUser = QBuddyUser.buddyUser;
+  QBuddy buddy = QBuddy.buddy;
   QUser user = QUser.user;
 
   @Override
@@ -64,6 +68,18 @@ public class BuddyUserCustomRepositoryImpl implements BuddyUserCustomRepository 
             .where(buddyUser.buddyId.eq(buddyId).and(buddyUser.userId.eq(userId)))
             .fetchOne();
     return buddyUserResult;
+  }
+
+  @Override
+  public List<BuddyDTO.BuddyInvitationResponse> findBuddyUserInvitationsByUserId(Long userId) {
+    List<BuddyDTO.BuddyInvitationResponse> buddyInvitationList = query.select(new QBuddyDTO_BuddyInvitationResponse(buddyUser.id, buddyUser.buddyId, buddy.name, buddyUser.acceptTf, buddyUser.acceptDt, buddyUser.created_at))
+            .from(buddyUser)
+            .innerJoin(buddyUser.buddy, buddy)
+            .on(buddyUser.buddyId.eq(buddy.id))
+            .where(buddyUser.userId.eq(userId))
+            .orderBy(buddyUser.created_at.desc())
+            .fetch();
+    return buddyInvitationList;
   }
 
 }

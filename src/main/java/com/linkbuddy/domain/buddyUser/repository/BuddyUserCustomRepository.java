@@ -1,5 +1,6 @@
 package com.linkbuddy.domain.buddyUser.repository;
 
+import com.linkbuddy.domain.buddy.dto.BuddyDTO;
 import com.linkbuddy.domain.user.dto.UserDTO;
 import com.linkbuddy.global.entity.BuddyUser;
 
@@ -33,4 +34,9 @@ public interface BuddyUserCustomRepository {
    * 버디 회원 리스트 조회 (버디 회원 탈퇴)
    */
   BuddyUser findBuddyUserByBuddyIdAndUserId(Long buddyId, Long userId);
+
+  /**
+   * 버디 회원 초대 리스트 조회
+   */
+  List<BuddyDTO.BuddyInvitationResponse> findBuddyUserInvitationsByUserId(Long userId);
 }

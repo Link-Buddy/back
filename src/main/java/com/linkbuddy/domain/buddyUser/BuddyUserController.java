@@ -2,6 +2,7 @@ package com.linkbuddy.domain.buddyUser;
 
 import com.linkbuddy.domain.buddy.dto.BuddyDTO;
 import com.linkbuddy.domain.user.dto.UserDTO;
+import com.linkbuddy.global.config.jwt.SecurityUtil;
 import com.linkbuddy.global.entity.BuddyUser;
 import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
@@ -30,6 +31,9 @@ import java.util.List;
 public class BuddyUserController {
     @Autowired
     BuddyUserService buddyUserService;
+
+    @Autowired
+    SecurityUtil securityUtil;
 
     /**
      * 버디에 참여중인 회원 리스트
@@ -65,6 +69,24 @@ public class BuddyUserController {
         return ResponseEntity.ok(ResponseMessage.builder()
                 .status(StatusEnum.OK)
                 .data(savedBuddyUser)
+                .build());
+    }
+
+    /**
+     * 회원 버디 초대 리스트 조회
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/invitation")
+    public ResponseEntity getBuddyUserInvitationList() throws Exception {
+        Long userId = securityUtil.getCurrentUserId();
+        log.info("userId = {}", userId);
+        List<BuddyDTO.BuddyInvitationResponse> invitationList = buddyUserService.findBuddyUserInvitationAll(userId);
+        log.info("invitation = {}", invitationList);
+
+        return ResponseEntity.ok(ResponseMessage.builder()
+                .status(StatusEnum.OK)
+                .data(invitationList)
                 .build());
     }
 
