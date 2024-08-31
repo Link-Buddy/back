@@ -4,6 +4,7 @@ import com.linkbuddy.domain.buddy.dto.BuddyDTO;
 import com.linkbuddy.domain.buddyUser.repository.BuddyUserRepository;
 import com.linkbuddy.domain.user.dto.UserDTO;
 import com.linkbuddy.domain.user.repository.UserRepository;
+import com.linkbuddy.global.config.jwt.SecurityUtil;
 import com.linkbuddy.global.entity.BuddyUser;
 import com.linkbuddy.global.entity.User;
 import jakarta.transaction.Transactional;
@@ -35,6 +36,9 @@ public class BuddyUserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SecurityUtil securityUtil;
 
     /**
      * 버디 참여 회원 리스트 조회
@@ -83,6 +87,22 @@ public class BuddyUserService {
     }
 
     /**
+     * 회원 버디 초대 리스트 조회
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    public List<BuddyDTO.BuddyInvitationResponse> findBuddyUserInvitationAll(Long userId) throws Exception {
+        try {
+            List<BuddyDTO.BuddyInvitationResponse> invitationList = buddyUserRepository.findBuddyUserInvitationsByUserId(userId);
+            return invitationList;
+
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    /**
      * 회원 버디 수정
      * @param id
      * @param buddyDTO
@@ -100,8 +120,10 @@ public class BuddyUserService {
                     .orElseThrow(() -> new IllegalArgumentException("Not exist Buddy user Data"));
             log.info("buddyUser = {}", buddyUser);
 
+            Long userId = securityUtil.getCurrentUserId();
+
             BuddyUser newBuddyUser = BuddyUser.builder()
-                    .userId(buddyUser.getUserId())
+                    .userId(userId)
                     .buddyId(buddyUser.getBuddyId())
                     .alertTf(buddyDTO.getAlertTf() != null ? buddyDTO.getAlertTf() : buddyUser.getAlertTf())
                     .pinTf(buddyDTO.getPinTf() != null ? buddyDTO.getPinTf() : buddyUser.getPinTf())
