@@ -1,12 +1,16 @@
 package com.linkbuddy.domain.category;
 
 import com.linkbuddy.global.entity.Category;
+import com.linkbuddy.global.util.CurrentUser;
+import com.linkbuddy.global.util.CustomUserDetails;
 import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
-import com.querydsl.core.Tuple;
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,8 +34,13 @@ public class CategoryController {
   private CategoryService categoryService;
 
   @GetMapping("my")
-  public ResponseEntity getMyPrivateCategory() throws Exception {
-    List<CategoryDto.PrivateCategory> privateCategories = categoryService.findMyPrivateCategories();
+  public ResponseEntity getMyPrivateCategory(@CurrentUser CustomUserDetails currentUser) throws Exception {
+    // 여기서 currentUser는 CurrentUserArgumentResolver에 의해 주입됨
+    // 현재 인증된 사용자 정보 가져오기
+    Long userId = currentUser.getId();
+    System.out.println("--------------------userId: " + userId);
+
+    List<CategoryDto.PrivateCategory> privateCategories = categoryService.findMyPrivateCategories(userId);
 
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)

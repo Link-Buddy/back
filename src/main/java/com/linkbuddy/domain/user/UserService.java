@@ -61,12 +61,15 @@ public class UserService {
   @Transactional
   public JwtToken signIn(String email, String password) {
     try {
+      User user = userRepository.findByEmail(email)
+              .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
+
       // 1. Authentication 객체 생성
       UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
       // 2. authenticate 메서드를 통해 요청된 회원정보에 대한 검증 -> loadUserByUsername 메서드 실행됨
       Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
       // 3. 검증에 성공하면 인증된 Authentication 객체 기반으로 JWT 토큰 생성
-      JwtToken jwtToken = jwtTokenProvider.createToken(authentication);
+      JwtToken jwtToken = jwtTokenProvider.createToken(authentication, user.getId());
 
       if (jwtToken == null || jwtToken.getAccessToken().isEmpty()) {
         throw new IllegalArgumentException("JWT 토큰 생성에 실패했습니다.");

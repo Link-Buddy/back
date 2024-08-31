@@ -1,5 +1,6 @@
 package com.linkbuddy.global.config.jwt;
 
+import com.linkbuddy.global.util.CustomUserDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -56,7 +57,7 @@ public class JwtTokenProvider {
    * @param authentication
    * @return
    */
-  public JwtToken createToken(Authentication authentication) {
+  public JwtToken createToken(Authentication authentication, Long userId) {
     log.info("authentication = {}", authentication);
     // 권한 가져오기
     String authorities = authentication.getAuthorities().stream()
@@ -70,6 +71,7 @@ public class JwtTokenProvider {
     Date accessTokenExpires = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
     String accessToken = Jwts.builder()
             .setSubject(authentication.getName())
+            .claim("userId", userId)
             .claim(AUTHORITIES_KEY, authorities)
             .setExpiration(accessTokenExpires)
             .signWith(key, SignatureAlgorithm.HS256)
@@ -106,13 +108,16 @@ public class JwtTokenProvider {
       throw new RuntimeException("권한 정보가 없는 토큰");
     }
 
+    String username = claims.getSubject();
+    Long userId = Long.parseLong(claims.get("userId").toString());
     // 역할 설정을 하지 않았기 때문에 빈 목록 반환
     Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
 
     // UserDetails 객체 생성해서 Authentication 반환
     // UserDetails, User : spring security - userdetails 클래스
-    UserDetails principal = new User(claims.getSubject(), "", authorities);
-    return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    CustomUserDetails userDetails = new CustomUserDetails(userId, username);
+    // UserDetails principal = new User(claims.getSubject(), "", authorities);
+    return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
   }
 
   /**
