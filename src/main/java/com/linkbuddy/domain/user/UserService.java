@@ -53,6 +53,7 @@ public class UserService {
     try {
       log.info("email = {}", email);
       return userRepository.customFindByEmail(email);
+
     } catch (Exception e) {
       throw new Exception();
     }

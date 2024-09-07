@@ -3,6 +3,7 @@ package com.linkbuddy.domain.buddy;
 import com.linkbuddy.domain.buddy.dto.BuddyDTO;
 import com.linkbuddy.domain.buddy.repository.BuddyRepository;
 import com.linkbuddy.domain.buddyUser.repository.BuddyUserRepository;
+import com.linkbuddy.global.config.jwt.SecurityUtil;
 import com.linkbuddy.global.entity.Buddy;
 import com.linkbuddy.global.entity.BuddyUser;
 import jakarta.transaction.Transactional;
@@ -24,15 +25,18 @@ public class BuddyService {
     @Autowired
     private BuddyUserRepository buddyUserRepository;
 
+    @Autowired
+    private SecurityUtil securityUtil;
+
     /**
-     * 회원 버디 리스트 조회 (By userId)
-     * @param userId
+     * 회원 버디 리스트 조회
      * @return
      * @throws Exception
      */
-    public List<BuddyDTO.BuddyResponse> findAll(Long userId) throws Exception {
+    public List<BuddyDTO.BuddyResponse> findAll() throws Exception {
         try {
-            List<BuddyDTO.BuddyResponse> buddyList = buddyRepository.findBuddyByUserId(userId);
+            Long currentUserId = securityUtil.getCurrentUserId();
+            List<BuddyDTO.BuddyResponse> buddyList = buddyRepository.findBuddyByUserId(currentUserId);
             return buddyList;
 
         } catch (Exception e) {
@@ -77,6 +81,7 @@ public class BuddyService {
             BuddyUser newBuddyUser = BuddyUser.builder()
                     .userId(buddy.getUserId())
                     .buddyId(savedBuddy.getId())
+                    .senderId(null)
                     .alertTf(true)
                     .pinTf(false)
                     .acceptTf(true)

@@ -62,12 +62,20 @@ public class UserController {
     log.info("user data = {}", user);
 
     if (user == null) {
-      return ResponseEntity.notFound().build();
+      return ResponseEntity.ok(ResponseMessage.builder()
+              .status(StatusEnum.NOT_FOUND)
+              .build());
+    } else {
+      HashMap<String, Object> userData = new HashMap<>();
+      userData.put("id", user.getId());
+      userData.put("name", user.getName());
+      userData.put("email", user.getEmail());
+
+      return ResponseEntity.ok(ResponseMessage.builder()
+              .status(StatusEnum.OK)
+              .data(userData)
+              .build());
     }
-    return ResponseEntity.ok(ResponseMessage.builder()
-            .status(StatusEnum.OK)
-            .data(user)
-            .build());
   }
 
   @PostMapping("/signIn")

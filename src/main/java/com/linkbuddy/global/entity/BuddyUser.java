@@ -32,6 +32,10 @@ public class BuddyUser {
     @Comment(value = "회원ID")
     private Long userId;
 
+    @Column(name = "sender_id", nullable = true)
+    @Comment(value = "발송자ID")
+    private Long senderId;
+
     @Column(name = "alert_tf", nullable = false)
     @Comment(value = "알림여부")
     private Boolean alertTf = true;
@@ -70,9 +74,10 @@ public class BuddyUser {
 
 
     @Builder
-    public BuddyUser(Long userId, Long buddyId, Boolean alertTf, Boolean pinTf, Boolean acceptTf, Timestamp acceptDt) {
+    public BuddyUser(Long userId, Long buddyId, Long senderId, Boolean alertTf, Boolean pinTf, Boolean acceptTf, Timestamp acceptDt) {
         this.userId = userId;
         this.buddyId = buddyId;
+        this.senderId = senderId;
         this.alertTf = alertTf;
         this.pinTf = pinTf;
         this.acceptTf = acceptTf;

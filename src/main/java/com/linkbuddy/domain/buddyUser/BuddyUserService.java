@@ -64,14 +64,16 @@ public class BuddyUserService {
      */
     public BuddyUser createBuddyUser(BuddyDTO buddy) throws Exception {
         try {
-            User user = userRepository.customFindByEmail(buddy.getEmail());
+            Long currentUserId = securityUtil.getCurrentUserId();
+            User invitedUser = userRepository.customFindByEmail(buddy.getEmail());
 
             // 버디 회원 조회
-            BuddyUser buddyUser = buddyUserRepository.findBuddyUserByBuddyIdAndUserId(buddy.getBuddyId(), user.getId());
+            BuddyUser buddyUser = buddyUserRepository.findBuddyUserByBuddyIdAndUserId(buddy.getBuddyId(), invitedUser.getId());
             if (buddyUser == null) {
                 BuddyUser newBuddyUser = BuddyUser.builder()
-                        .userId(user.getId())
+                        .userId(invitedUser.getId())
                         .buddyId(buddy.getBuddyId())
+                        .senderId(currentUserId)
                         .alertTf(true)  //알림여부
                         .pinTf(false)   //고정여부
                         .acceptTf(false)    //수락여부
@@ -125,6 +127,7 @@ public class BuddyUserService {
             BuddyUser newBuddyUser = BuddyUser.builder()
                     .userId(userId)
                     .buddyId(buddyUser.getBuddyId())
+                    .senderId(buddyUser.getSenderId())
                     .alertTf(buddyDTO.getAlertTf() != null ? buddyDTO.getAlertTf() : buddyUser.getAlertTf())
                     .pinTf(buddyDTO.getPinTf() != null ? buddyDTO.getPinTf() : buddyUser.getPinTf())
                     .acceptTf(buddyDTO.getAcceptTf() != null ? buddyDTO.getAcceptTf() : buddyUser.getAcceptTf())
