@@ -1,5 +1,6 @@
 package com.linkbuddy.domain.link;
 
+import com.linkbuddy.global.config.jwt.SecurityUtil;
 import com.linkbuddy.global.entity.Link;
 import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
@@ -17,10 +18,14 @@ import java.util.List;
 public class LinkController {
   @Autowired
   private LinkService linkService;
+  @Autowired
+  SecurityUtil securityUtil;
 
-  @GetMapping
-  public ResponseEntity getLinks() {
-    List<Link> links = linkService.findAll();
+
+  @GetMapping("category/{categoryId}")
+  public ResponseEntity getLinksByCategoryId(@PathVariable("categoryId") Long categoryId) throws Exception {
+    Long userId = securityUtil.getCurrentUserId();
+    List<Link> links = linkService.findMyByCategoryId(categoryId, userId);
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
             .data(links)
@@ -40,8 +45,8 @@ public class LinkController {
 
   @PostMapping
   public ResponseEntity createLink(@RequestBody @Valid LinkDto.Create createDto) throws Exception {
-
-    Link newLink = linkService.save(createDto);
+    Long userId = securityUtil.getCurrentUserId();
+    Link newLink = linkService.save(createDto, userId);
 
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)

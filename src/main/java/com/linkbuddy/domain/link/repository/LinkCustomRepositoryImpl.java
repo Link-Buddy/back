@@ -28,6 +28,20 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
   }
 
   @Override
+  public List<Link> findMyLinksByCategoryId(Long categoryId, Long userId) {
+    List<Link> result = query.selectFrom(link).where(link.deleteTf.eq(false).and(link.categoryId.eq(categoryId)).and(link.userId.eq(userId))).fetch();
+
+    return result;
+  }
+
+  @Override
+  public List<Link> findBuddyLinksByCategoryId(Long categoryId) {
+    List<Link> result = query.selectFrom(link).where(link.deleteTf.eq(false).and(link.categoryId.eq(categoryId))).fetch();
+
+    return result;
+  }
+
+  @Override
   public Link findOneActive(Long id) {
     Link result = query.selectFrom(link).where(link.id.eq(id)
             .and(link.deleteTf.eq(false))).fetchOne();

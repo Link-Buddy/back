@@ -21,10 +21,15 @@ import java.util.List;
 public interface LinkCustomRepository {
   List<Link> findAllActive();
 
+  List<Link> findMyLinksByCategoryId(Long categoryId, Long userId);
+
+  List<Link> findBuddyLinksByCategoryId(Long categoryId);
+
+
   Link findOneActive(Long id);
 
   JPAUpdateClause changePrivateCategoryIdByIds(List<Long> ids, Long newCategoryId, Long userId);
-  
+
   JPAUpdateClause changeBuddyCategoryIdByIds(List<Long> ids, Long newCategoryId);
 
 
