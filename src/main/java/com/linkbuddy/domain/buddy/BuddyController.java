@@ -23,13 +23,11 @@ public class BuddyController {
 
     /**
      * 회원 버디 리스트 조회
-     * @param userId
      * @return
      */
     @GetMapping
-    public ResponseEntity getBuddyList(@RequestParam(value = "userId") Long userId) throws Exception {
-        log.info("userId = {}", userId);
-        List<BuddyDTO.BuddyResponse> buddyList = buddyService.findAll(userId);
+    public ResponseEntity getBuddyList() throws Exception {
+        List<BuddyDTO.BuddyResponse> buddyList = buddyService.findAll();
         return ResponseEntity.ok(ResponseMessage.builder()
                 .status(StatusEnum.OK)
                 .data(buddyList)
