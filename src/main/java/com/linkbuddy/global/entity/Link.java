@@ -44,8 +44,9 @@ public class Link {
   @Column(name = "updated_at")
   private Timestamp updatedAt;
 
-  @Column(name = "user_id", nullable = false)
+  @Column(name = "user_id", nullable = true)
   private Long userId;
+
 
   @Builder
   public Link(String name, String description, String linkUrl, Long categoryId, Long userId) {

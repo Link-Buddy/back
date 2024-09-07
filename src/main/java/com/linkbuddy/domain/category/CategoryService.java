@@ -85,10 +85,9 @@ public class CategoryService {
     }
   }
 
-  public List<CategoryDto.PrivateCategory> findMyPrivateCategories() throws Exception {
+  public List<CategoryDto.PrivateCategory> findMyPrivateCategories(Long userId) throws Exception {
     try {
-      Long userId = (long) 1234; //getUserId;
-      Long shareCode = (long) 10;//getShareCode
+      Long shareCode = (long) 10; //getShareCode
       return categoryRepository.findMyPrivateCategories(userId, shareCode);
     } catch (Exception e) {
       System.out.println("e");

@@ -1,5 +1,6 @@
 package com.linkbuddy.domain.category;
 
+import com.linkbuddy.global.config.jwt.SecurityUtil;
 import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
@@ -28,10 +29,14 @@ import java.util.List;
 public class CategoryController {
   @Autowired
   private CategoryService categoryService;
+  @Autowired
+  SecurityUtil securityUtil;
+
 
   @GetMapping("my")
   public ResponseEntity getMyPrivateCategory() throws Exception {
-    List<CategoryDto.PrivateCategory> privateCategories = categoryService.findMyPrivateCategories();
+    Long userId = securityUtil.getCurrentUserId();
+    List<CategoryDto.PrivateCategory> privateCategories = categoryService.findMyPrivateCategories(userId);
 
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)

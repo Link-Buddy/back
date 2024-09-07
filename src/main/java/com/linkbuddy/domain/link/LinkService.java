@@ -26,6 +26,27 @@ public class LinkService {
     return linkRepository.findAllActive();
   }
 
+  public List<Link> findMyByCategoryId(Long categoryId, Long userId) throws Exception {
+    try {
+      return linkRepository.findMyLinksByCategoryId(categoryId, userId);
+    } catch (Exception e) {
+      System.out.println("e");
+      throw new Exception(e);
+    }
+  }
+
+  public List<Link> findBuddyLinksByCategoryId(Long categoryId, Long userId, Long buddyId) throws Exception {
+    try {
+      //TODO : 해당 유저가 특정 buddy에 포함되는지 확인
+
+      return linkRepository.findBuddyLinksByCategoryId(categoryId);
+    } catch (Exception e) {
+      System.out.println("e");
+      throw new Exception(e);
+    }
+  }
+
+
   private Link findById(Long id) {
     return linkRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Link not found." + id));
   }
@@ -40,10 +61,9 @@ public class LinkService {
   }
 
 
-  public Link save(LinkDto.Create linkDto) throws Exception {
+  public Link save(LinkDto.Create linkDto, Long userId) throws Exception {
     try {
 
-      Long userId = (long) 1234; //getUserId;
 
       Link newLink = Link.builder()
               .name(linkDto.getName())
