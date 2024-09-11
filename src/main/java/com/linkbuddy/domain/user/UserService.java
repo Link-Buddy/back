@@ -1,8 +1,11 @@
 package com.linkbuddy.domain.user;
 
+import com.linkbuddy.domain.category.CategoryDto;
+import com.linkbuddy.domain.category.CategoryService;
 import com.linkbuddy.domain.user.repository.UserRepository;
 import com.linkbuddy.global.config.jwt.JwtToken;
 import com.linkbuddy.global.config.jwt.JwtTokenProvider;
+import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +33,8 @@ public class UserService {
 
   @Autowired
   PasswordEncoder passwordEncoder;
+  @Autowired
+  private CategoryService categoryService;
 
   public User create(User user) throws Exception {
     try {
@@ -41,13 +46,25 @@ public class UserService {
               .password(encodePassword)
               .statusCd(10)   // default
               .build();
+
       userRepository.save(newUser);
+
+      // CreatePrivate 객체 생성
+      Category category = new Category();
+      category.setCategoryName("미분류");
+
+      CategoryDto.CreatePrivate privateDto = CategoryDto.CreatePrivate.builder()
+              .c(category)
+              .build();
+      categoryService.createPrivateCategory(privateDto, newUser.getId());
+
       return user;
 
     } catch (Exception e) {
       throw new Exception(e);
     }
   }
+
 
   public User find(String email) throws Exception {
     try {

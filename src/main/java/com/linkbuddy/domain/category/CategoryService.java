@@ -46,10 +46,9 @@ public class CategoryService {
     }
   }
 
-  public Category createPrivateCategory(CategoryDto.CreatePrivate privateCategoryDto) throws Exception {
+  public Category createPrivateCategory(CategoryDto.CreatePrivate privateCategoryDto, Long userId) throws Exception {
     try {
 
-      Long userId = (long) 1234; //getUserId;
       Long shareType = (long) 10; //get private ShearType
 
       Category newPrivateCategory = Category.builder()

@@ -58,6 +58,8 @@ public class CategoryDto {
     public CreatePrivate(Category c) {
       this.categoryName = c.getCategoryName();
     }
+
+
   }
 
 

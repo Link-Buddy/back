@@ -56,9 +56,9 @@ public class CategoryController {
 
   @PostMapping("/my")
   public ResponseEntity createPrivateCategory(@RequestBody CategoryDto.CreatePrivate privateDto) throws Exception {
+    Long userId = securityUtil.getCurrentUserId();
 
-
-    Category newCategory = categoryService.createPrivateCategory(privateDto);
+    Category newCategory = categoryService.createPrivateCategory(privateDto, userId);
 
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
