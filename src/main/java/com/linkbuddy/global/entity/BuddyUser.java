@@ -55,12 +55,12 @@ public class BuddyUser {
     @CreationTimestamp  //Insert 쿼리 발생시 현재 시간 값 적용
     @Column(name = "created_at")
     @Comment(value = "생성일시")
-    private Timestamp created_at;
+    private Timestamp createdAt;
 
     @UpdateTimestamp    //Update 쿼리 발생시 현재 시간 값 적용
     @Column(name = "updated_at")
     @Comment(value = "수정일시")
-    private Timestamp updated_at;
+    private Timestamp updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buddy_id", referencedColumnName = "id", insertable = false, updatable = false)

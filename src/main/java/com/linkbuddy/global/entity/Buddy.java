@@ -27,24 +27,24 @@ public class Buddy {
     @Comment(value = "버디명")
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "creator_id", nullable = false)
     @Comment(value = "생성자ID")
-    private Long creator_id;
+    private Long creatorId;
 
     @CreationTimestamp  //Insert 쿼리 발생시 현재 시간 값 적용
     @Column(name = "created_at")
     @Comment(value = "생성일시")
-    private Timestamp created_at;
+    private Timestamp createdAt;
 
     @UpdateTimestamp    //Update 쿼리 발생시 현재 시간 값 적용
     @Column(name = "updated_at")
     @Comment(value = "수정일시")
-    private Timestamp updated_at;
+    private Timestamp updatedAt;
 
     @Builder
-    public Buddy(String name, Long creator_id) {
+    public Buddy(String name, Long creatorId) {
         this.name = name;
-        this.creator_id = creator_id;
+        this.creatorId = creatorId;
     }
 
     public void update(String name) {

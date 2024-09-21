@@ -10,4 +10,5 @@ import java.util.Optional;
 //@Transactional
 public interface BuddyRepository extends JpaRepository<Buddy, Long>, BuddyCustomRepository {
 
+  Optional<Buddy> findByNameAndCreatorId(String name, Long currentUserId);
 }
