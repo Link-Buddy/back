@@ -2,6 +2,8 @@ package com.linkbuddy.domain.category;
 
 import com.linkbuddy.domain.category.repository.CategoryRepository;
 import com.linkbuddy.global.entity.Category;
+import com.linkbuddy.global.util.CustomException;
+import com.linkbuddy.global.util.StatusEnum;
 import com.querydsl.core.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,11 +48,15 @@ public class CategoryService {
     }
   }
 
-  public Category createPrivateCategory(CategoryDto.CreatePrivate privateCategoryDto) throws Exception {
+  public Category createPrivateCategory(CategoryDto.CreatePrivate privateCategoryDto, Long userId) throws Exception {
     try {
 
-      Long userId = (long) 1234; //getUserId;
       Long shareType = (long) 10; //get private ShearType
+
+      Category existingCategory = categoryRepository.findPrivateCategoryByName(userId, shareType, privateCategoryDto.getCategoryName());
+      if (existingCategory != null) {
+        throw new CustomException(StatusEnum.CONFLICT, "이미 동일한 이름의 카테고리가 존재합니다.");
+      }
 
       Category newPrivateCategory = Category.builder()
               .categoryName(privateCategoryDto.getCategoryName())
@@ -65,10 +71,9 @@ public class CategoryService {
     }
   }
 
-  public Category createBuddyCategory(CategoryDto.CreateBuddy buddyCategoryDto) throws Exception {
+  public Category createBuddyCategory(CategoryDto.CreateBuddy buddyCategoryDto, Long userId) throws Exception {
     try {
 
-      Long userId = (long) 1234; //getUserId;
       Long shareType = (long) 20; //get public ShearType
 
       Category newBuddyCategory = Category.builder()
@@ -96,9 +101,8 @@ public class CategoryService {
   }
 
 
-  public List<CategoryDto.BuddyCategory> findMyBuddyCategoriesByBuddyId(Long buddyId) throws Exception {
+  public List<CategoryDto.BuddyCategory> findMyBuddyCategoriesByBuddyId(Long buddyId, Long userId) throws Exception {
     try {
-      Long userId = (long) 1; //getUserId;
       Long shareCode = (long) 20; //getShareCode
 
       return categoryRepository.findMyBuddyCategoriesByBuddyId(userId, shareCode, buddyId);

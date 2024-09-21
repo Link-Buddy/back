@@ -22,11 +22,12 @@ public interface CategoryCustomRepository {
 
   List<CategoryDto.PrivateCategory> findMyPrivateCategories(Long userId, Long shareTypeCd);
 
+  Category findPrivateCategoryByName(Long userId, Long shareTypeCd, String categoryName);
+
   List<CategoryDto.BuddyCategory> findMyBuddyCategoriesByBuddyId(Long userId, Long shareTypeCd, Long buddyId);
 
   //권한 있는 카테고리
   Category findExistBuddyCategory(Long id, Long buddyId, Long userId);
-
 
   Category findExistPrivateCategory(Long id, Long userId);
 

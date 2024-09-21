@@ -51,10 +51,22 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
     return result;
   }
 
+  @Override
+  public Category findPrivateCategoryByName(Long userId, Long shareTypeCd, String categoryName) {
+    Category result = query.selectFrom(category)
+            .where(category.userId.eq(userId)
+                    .and(category.shareTypeCd.eq(shareTypeCd))
+                    .and(category.categoryName.eq(categoryName))
+                    .and(category.deleteTf.eq(false)))
+            .fetchOne();
+
+    return result;
+  }
+
 
   @Override
   public List<CategoryDto.BuddyCategory> findMyBuddyCategoriesByBuddyId(Long userId, Long shareTypeCd, Long buddyId) {
-    
+
     List<CategoryDto.BuddyCategory> result = query.select(new QCategoryDto_BuddyCategory(category))
             .from(category)
             .leftJoin(buddyUser).on(category.buddyId.eq(buddyUser.buddyId))
