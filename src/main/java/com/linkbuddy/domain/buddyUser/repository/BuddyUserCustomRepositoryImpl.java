@@ -72,12 +72,14 @@ public class BuddyUserCustomRepositoryImpl implements BuddyUserCustomRepository 
 
   @Override
   public List<BuddyDTO.BuddyInvitationResponse> findBuddyUserInvitationsByUserId(Long userId) {
-    List<BuddyDTO.BuddyInvitationResponse> buddyInvitationList = query.select(new QBuddyDTO_BuddyInvitationResponse(buddyUser.id, buddyUser.buddyId, buddy.name, buddyUser.acceptTf, buddyUser.acceptDt, buddyUser.created_at))
+    List<BuddyDTO.BuddyInvitationResponse> buddyInvitationList = query.select(new QBuddyDTO_BuddyInvitationResponse(buddyUser.id, buddyUser.buddyId, buddyUser.senderId, user.name, user.email, buddy.name, buddyUser.acceptTf, buddyUser.acceptDt, buddyUser.createdAt))
             .from(buddyUser)
             .innerJoin(buddyUser.buddy, buddy)
             .on(buddyUser.buddyId.eq(buddy.id))
-            .where(buddyUser.userId.eq(userId))
-            .orderBy(buddyUser.created_at.desc())
+            .innerJoin(user)
+            .on(buddyUser.senderId.eq(user.id))
+            .where(buddyUser.userId.eq(userId).and(buddy.creatorId.eq(buddyUser.userId).not()))
+            .orderBy(buddyUser.createdAt.desc())
             .fetch();
     return buddyInvitationList;
   }

@@ -62,33 +62,43 @@ public class BuddyService {
 
     /**
      * 버디 생성
-     * @param buddy
+     * @param buddyDTO
      * @return
      * @throws Exception
      */
-    public BuddyUser create(BuddyDTO buddy) throws Exception {
+    public BuddyUser create(BuddyDTO buddyDTO) throws Exception {
         try {
-            // 현재시간
-            LocalDateTime now = LocalDateTime.now();
+            Long currentUserId = securityUtil.getCurrentUserId();
+            log.info("currentUserId = {}", currentUserId);
 
-            Buddy newBuddy = Buddy.builder()
-                    .name(buddy.getName())
-                    .creator_id(buddy.getUserId())
-                    .build();
-            // Buddy save
-            Buddy savedBuddy = buddyRepository.save(newBuddy);
+            Optional<Buddy> buddy = buddyRepository.findByNameAndCreatorId(buddyDTO.getName(), currentUserId);
+            log.info("buddy = {}", buddy);
+            if (!buddy.isEmpty()) {
+                return null;
+            } else {
+                // 현재시간
+                LocalDateTime now = LocalDateTime.now();
 
-            BuddyUser newBuddyUser = BuddyUser.builder()
-                    .userId(buddy.getUserId())
-                    .buddyId(savedBuddy.getId())
-                    .senderId(null)
-                    .alertTf(true)
-                    .pinTf(false)
-                    .acceptTf(true)
-                    .acceptDt(Timestamp.valueOf(now))
-                    .build();
-            // Buddy user save
-            return buddyUserRepository.save(newBuddyUser);
+                Buddy newBuddy = Buddy.builder()
+                        .name(buddyDTO.getName())
+                        .creatorId(currentUserId)
+                        .build();
+                log.info("newBuddy = {}", newBuddy);
+                // Buddy save
+                Buddy savedBuddy = buddyRepository.save(newBuddy);
+
+                BuddyUser newBuddyUser = BuddyUser.builder()
+                        .userId(currentUserId)
+                        .buddyId(savedBuddy.getId())
+                        .senderId(null)
+                        .alertTf(true)
+                        .pinTf(false)
+                        .acceptTf(true)
+                        .acceptDt(Timestamp.valueOf(now))
+                        .build();
+                // Buddy user save
+                return buddyUserRepository.save(newBuddyUser);
+            }
 
         } catch (Exception e) {
             throw new Exception(e);
@@ -108,9 +118,9 @@ public class BuddyService {
             Buddy buddy = buddyRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("Not exist Buddy Data"));
             log.info("buddy.getCreator_id()= {}", buddyDTO.getUserId());
-            log.info("buddy.getCreator_id() = {}", buddy.getCreator_id());
+            log.info("buddy.getCreator_id() = {}", buddy.getCreatorId());
             // buddy를 생성한 사람만 이름 수정 가능
-            if (Long.valueOf(buddyDTO.getUserId()) != buddy.getCreator_id()) {
+            if (Long.valueOf(buddyDTO.getUserId()) != buddy.getCreatorId()) {
                 throw new IllegalArgumentException("Cannot access to update Buddy");
             }
             buddy.update(buddyDTO.getName());

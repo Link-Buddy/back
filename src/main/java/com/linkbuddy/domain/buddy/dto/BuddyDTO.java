@@ -25,6 +25,7 @@ public class BuddyDTO {
     private String email;
     private Long userId;
     private Long buddyId;
+    private Long senderId;
     private Boolean alertTf;
     private Boolean pinTf;
     private Boolean acceptTf;
@@ -57,15 +58,21 @@ public class BuddyDTO {
         private Long id;
         private String name;
         private Long buddyId;
+        private Long senderId;
+        private String senderName;
+        private String senderEmail;
         private Boolean acceptTf;
         private Timestamp acceptDt;
         private Timestamp createdAt;
 
         @Builder
         @QueryProjection
-        public BuddyInvitationResponse(Long id, Long buddyId, String name, Boolean acceptTf, Timestamp acceptDt, Timestamp createdAt) {
+        public BuddyInvitationResponse(Long id, Long buddyId, Long senderId, String senderName, String senderEmail, String name, Boolean acceptTf, Timestamp acceptDt, Timestamp createdAt) {
             this.id = id;
             this.buddyId = buddyId;
+            this.senderId = senderId;
+            this.senderName = senderName;
+            this.senderEmail = senderEmail;
             this.name = name;
             this.acceptTf = acceptTf;
             this.acceptDt = acceptDt;
