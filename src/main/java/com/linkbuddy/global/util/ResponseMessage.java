@@ -19,11 +19,13 @@ import lombok.Setter;
 @Data
 @Builder
 public class ResponseMessage<T> {
-    private StatusEnum status;
-    private T data;
+  private StatusEnum status;
+  private T data;
+  private String message;
 
-    public void Message(StatusEnum status, T data) {
-        this.status = status;
-        this.data = data;
-    }
+  public void Message(StatusEnum status, T data, String message) {
+    this.status = status;
+    this.data = data;
+    this.message = message;
+  }
 }
