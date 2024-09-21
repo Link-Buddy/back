@@ -46,11 +46,12 @@ public class CategoryController {
 
   @GetMapping("buddy")
   public ResponseEntity getMyBuddyCategory(@RequestParam("buddyId") Long buddyId) throws Exception {
-    List<CategoryDto.BuddyCategory> boddyCategories = categoryService.findMyBuddyCategoriesByBuddyId(buddyId);
+    Long userId = securityUtil.getCurrentUserId();
+    List<CategoryDto.BuddyCategory> buddyCategories = categoryService.findMyBuddyCategoriesByBuddyId(buddyId, userId);
 
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
-            .data(boddyCategories)
+            .data(buddyCategories)
             .build());
   }
 
@@ -68,8 +69,8 @@ public class CategoryController {
 
   @PostMapping("/buddy")
   public ResponseEntity createBuddyCategory(@RequestBody CategoryDto.CreateBuddy buddyCategoryDto) throws Exception {
-
-    Category newCategory = categoryService.createBuddyCategory(buddyCategoryDto);
+    Long userId = securityUtil.getCurrentUserId();
+    Category newCategory = categoryService.createBuddyCategory(buddyCategoryDto, userId);
 
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)

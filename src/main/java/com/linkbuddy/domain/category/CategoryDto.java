@@ -49,6 +49,7 @@ public class CategoryDto {
   @Getter
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   public static class CreatePrivate {
+    private Long id;
     @NotBlank(message = "폴더명 공백이 아니어야 합니다.")
     @Length(max = 50, message = "글자 수는 최대 50자 이하여야 합니다.")
     @NotNull
@@ -56,6 +57,7 @@ public class CategoryDto {
 
     @Builder
     public CreatePrivate(Category c) {
+      this.id = c.getId();
       this.categoryName = c.getCategoryName();
     }
 
