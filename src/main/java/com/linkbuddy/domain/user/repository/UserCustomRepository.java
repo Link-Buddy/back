@@ -15,4 +15,6 @@ import com.linkbuddy.global.entity.User;
  */
 public interface UserCustomRepository {
   User customFindByEmail(String email);
+
+  User update(Long userId, String name);
 }

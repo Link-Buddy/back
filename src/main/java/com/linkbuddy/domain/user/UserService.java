@@ -2,11 +2,14 @@ package com.linkbuddy.domain.user;
 
 import com.linkbuddy.domain.category.CategoryDto;
 import com.linkbuddy.domain.category.CategoryService;
+import com.linkbuddy.domain.user.dto.UserDTO;
 import com.linkbuddy.domain.user.repository.UserRepository;
 import com.linkbuddy.global.config.jwt.JwtToken;
 import com.linkbuddy.global.config.jwt.JwtTokenProvider;
 import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.User;
+import com.linkbuddy.global.util.CustomException;
+import com.linkbuddy.global.util.StatusEnum;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +75,52 @@ public class UserService {
       return userRepository.customFindByEmail(email);
 
     } catch (Exception e) {
-      throw new Exception();
+      throw new Exception(e);
     }
+  }
+
+  public User findById(Long userId) throws Exception {
+    try {
+      return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found." + userId));
+
+    } catch (Exception e) {
+      throw new Exception(e);
+    }
+  }
+
+  @Transactional
+  public User updateUser(Long userId, UserDTO.Update updateDto) throws Exception {
+    try {
+      return userRepository.update(userId, updateDto.getName());
+
+    } catch (Exception e) {
+      throw new Exception(e);
+    }
+  }
+
+
+  @Transactional
+  public boolean changePassword(Long userId, String currentPassword, String newPassword) {
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+    // 현재 비밀번호 확인
+    if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+      throw new CustomException(StatusEnum.BAD_REQUEST, "현재 비밀번호가 올바르지 않습니다.");
+    }
+    if (currentPassword.equals(newPassword)) {
+      throw new CustomException(StatusEnum.BAD_REQUEST, "현재 비밀번호와 다른 비밀번호를 입력해주세요");
+
+    }
+
+    // 새 비밀번호 암호화
+    String encodedNewPassword = passwordEncoder.encode(newPassword);
+
+    // 비밀번호 업데이트
+    user.setPassword(encodedNewPassword);
+    userRepository.save(user);
+
+    return true;
   }
 
   @Transactional

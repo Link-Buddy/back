@@ -1,7 +1,12 @@
 package com.linkbuddy.domain.user.dto;
 
+import com.linkbuddy.global.entity.Link;
+import com.linkbuddy.global.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * packageName    : com.linkbuddy.domain.user.dto
@@ -19,6 +24,7 @@ public class UserDTO {
   private Long id;
   private String email;
   private String name;
+  private String password;
   private String social;
   private Integer statusCd;
   private Long fileId;
@@ -39,4 +45,18 @@ public class UserDTO {
       this.email = email;
     }
   }
+
+  @Getter
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  public static class Update {
+    private Long id;
+    private String name;
+
+    @Builder
+    public Update(User u) {
+      this.id = u.getId();
+      this.name = u.getName();
+    }
+  }
+
 }
