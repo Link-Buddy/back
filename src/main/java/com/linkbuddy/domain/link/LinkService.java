@@ -6,6 +6,7 @@ import com.linkbuddy.domain.link.repository.LinkRepository;
 import com.linkbuddy.domain.user.dto.UserDTO;
 import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.Link;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
+@Slf4j
 public class LinkService {
   @Autowired
   private LinkRepository linkRepository;
@@ -89,8 +91,10 @@ public class LinkService {
       if (!existLink.isHost(userId)) {
         throw new IllegalArgumentException("삭제 권한 없음"); //공통 예외?
       }
+      log.info("linkDto = {}", linkDto);
+      existLink.updateLink(linkDto, userId);
 
-      existLink.updateLink(linkDto);
+      log.info("existLink = {}", existLink);
       return linkRepository.save(existLink);
     } catch (Exception e) {
       System.out.println("e");

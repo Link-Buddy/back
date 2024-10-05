@@ -61,6 +61,8 @@ public class LinkDto {
     private Long categoryId;
     @NotNull
     private Boolean deleteTf;
+    @NotNull
+    private Long userId;
 
     @Builder
     public Update(Link l) {
@@ -70,6 +72,7 @@ public class LinkDto {
       this.linkUrl = l.getLinkUrl();
       this.categoryId = l.getCategoryId();
       this.deleteTf = l.getDeleteTf();
+      this.userId = l.getUserId();
     }
   }
 }

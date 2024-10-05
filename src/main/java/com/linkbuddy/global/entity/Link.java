@@ -61,11 +61,12 @@ public class Link {
     return this.userId.equals(userId);
   }
 
-  public void updateLink(LinkDto.Update updateLinkDto) {
+  public void updateLink(LinkDto.Update updateLinkDto, Long userId) {
     this.name = updateLinkDto.getName();
     this.description = updateLinkDto.getDescription();
     this.categoryId = updateLinkDto.getCategoryId();
-    this.deleteTf = updateLinkDto.getDeleteTf();
+    this.linkUrl = updateLinkDto.getLinkUrl();
+    this.userId = userId;
   }
 
 }

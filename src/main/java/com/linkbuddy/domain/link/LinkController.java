@@ -5,6 +5,7 @@ import com.linkbuddy.global.entity.Link;
 import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +16,7 @@ import java.util.List;
 @RequestMapping("links")
 @RestController
 @Validated
+@Slf4j
 public class LinkController {
   @Autowired
   private LinkService linkService;
@@ -57,7 +59,7 @@ public class LinkController {
 
   @PutMapping("{id}")
   public ResponseEntity updateLink(@PathVariable("id") Long id, @RequestBody LinkDto.Update updateDto) throws Exception {
-    Long userId = getCurrentUserId();
+    Long userId = securityUtil.getCurrentUserId();
     Link updatedLink = linkService.update(id, updateDto, userId);
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
@@ -67,10 +69,11 @@ public class LinkController {
 
   @DeleteMapping("{id}")
   public ResponseEntity deleteLink(@PathVariable("id") Long id) throws Exception {
-    Long userId = getCurrentUserId();
+    Long userId = securityUtil.getCurrentUserId();
     linkService.delete(id, userId);
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
+            .data(true)
             .build());
   }
 
