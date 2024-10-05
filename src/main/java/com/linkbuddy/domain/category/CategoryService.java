@@ -1,6 +1,7 @@
 package com.linkbuddy.domain.category;
 
 import com.linkbuddy.domain.category.repository.CategoryRepository;
+import com.linkbuddy.domain.link.repository.LinkRepository;
 import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.util.CustomException;
 import com.linkbuddy.global.util.StatusEnum;
@@ -26,6 +27,7 @@ import java.util.List;
 public class CategoryService {
   @Autowired
   private CategoryRepository categoryRepository;
+  private LinkRepository linkRepository;
 
   //유저 생성 시 기본으로 "미분류" 카테고리 생성
   public Category createGeneralCategory(CategoryDto.CreatePrivate privateGroupDto) throws Exception {
