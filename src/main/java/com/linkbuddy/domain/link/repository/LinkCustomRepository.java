@@ -28,7 +28,7 @@ public interface LinkCustomRepository {
 
   List<Link> getMyFavoriteLinks(Long userId);
 
-  LinkDto.Mylink findMyLink(Long userId);
+  Long findMyLinkCount(Long userId);
 
   Link findOneActive(Long id);
 

@@ -45,6 +45,19 @@ public class LinkController {
             .build());
   }
 
+  //좋아요 누른 게시글
+  @GetMapping("favorite")
+  public ResponseEntity getMyFavoriteLinks() throws Exception {
+    Long userId = securityUtil.getCurrentUserId();
+    List<Link> links = linkService.getMyFavoriteLinks(userId);
+
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(links)
+            .build());
+  }
+
+
   @PostMapping
   public ResponseEntity createLink(@RequestBody @Valid LinkDto.Create createDto) throws Exception {
     Long userId = securityUtil.getCurrentUserId();
@@ -87,8 +100,5 @@ public class LinkController {
             .build());
   }
 
-  private Long getCurrentUserId() {
-    return (long) 1234;
-    //userServic.getCurrentUserId();
-  }
+
 }

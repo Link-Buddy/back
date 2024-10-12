@@ -31,14 +31,14 @@ public class LinkDto {
   public static class Mylink {
 
     private Long linkCount;
-    //  private Long favoriteCount;
+    private Long favoriteCount;
 
     @Builder
     @QueryProjection
-    public Mylink(Long linkCount) {
+    public Mylink(Long linkCount, Long favoriteCount) {
 
       this.linkCount = linkCount;
-      //   this.favoriteCount = favoriteCount;
+      this.favoriteCount = favoriteCount;
     }
 
   }

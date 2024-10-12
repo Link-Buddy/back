@@ -61,8 +61,8 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
   }
 
   @Override
-  public LinkDto.Mylink findMyLink(Long userId) {
-    LinkDto.Mylink result = query.select(new QLinkDto_Mylink(link.count()))
+  public Long findMyLinkCount(Long userId) {
+    Long result = query.select(link.count())
             .from(link)
             .where(link.deleteTf.eq(false).and(link.userId.eq(userId)))
             .fetchOne();

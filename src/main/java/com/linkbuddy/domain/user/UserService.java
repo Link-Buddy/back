@@ -88,8 +88,7 @@ public class UserService {
       User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found." + userId));
       LinkDto.Mylink myCount = linkService.findMyLinkCount(userId);
       return UserDTO.UserInfo.builder()
-              .user(user)
-              .linkCount(myCount.getLinkCount()) // LinkDto.Mylink에서 linkCount 추출
+              .user(user).my(myCount)
               .build();
     } catch (Exception e) {
       throw new Exception(e);

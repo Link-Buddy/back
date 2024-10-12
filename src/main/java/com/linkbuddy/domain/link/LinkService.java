@@ -2,6 +2,7 @@ package com.linkbuddy.domain.link;
 
 import com.linkbuddy.domain.buddyUser.repository.BuddyUserRepository;
 import com.linkbuddy.domain.category.repository.CategoryRepository;
+import com.linkbuddy.domain.favorite.repository.FavoriteRepository;
 import com.linkbuddy.domain.link.repository.LinkRepository;
 import com.linkbuddy.domain.user.dto.UserDTO;
 import com.linkbuddy.global.entity.Category;
@@ -23,6 +24,8 @@ public class LinkService {
   private CategoryRepository categoryRepository;
   @Autowired
   private BuddyUserRepository buddyUserRepository;
+  @Autowired
+  private FavoriteRepository favoriteRepository;
 
   public List<Link> findAll() {
     return linkRepository.findAllActive();
@@ -69,8 +72,11 @@ public class LinkService {
     }
   }
 
-  public LinkDto.Mylink findMyLinkCount(Long userId) throws Exception {
-    return linkRepository.findMyLink(userId);
+  public LinkDto.Mylink findMyLinkCount(Long userId) {
+    Long linkCount = linkRepository.findMyLinkCount(userId);
+    Long favoriteCount = favoriteRepository.findMyFavoriteCount(userId);
+
+    return LinkDto.Mylink.builder().linkCount(linkCount).favoriteCount(favoriteCount).build();
   }
 
   public Link save(LinkDto.Create linkDto, Long userId) throws Exception {
