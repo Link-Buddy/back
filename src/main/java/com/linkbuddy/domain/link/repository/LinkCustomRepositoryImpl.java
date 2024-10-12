@@ -2,7 +2,9 @@ package com.linkbuddy.domain.link.repository;
 
 import com.linkbuddy.domain.link.LinkDto;
 import com.linkbuddy.domain.link.QLinkDto_SearchResponse;
+import com.linkbuddy.domain.link.QLinkDto_Mylink;
 import com.linkbuddy.global.entity.*;
+import com.linkbuddy.domain.category.CategoryDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import jakarta.transaction.Transactional;
@@ -21,6 +23,7 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
   QCategory category = QCategory.category;
   QBuddy buddy = QBuddy.buddy;
   QBuddyUser buddyUser = QBuddyUser.buddyUser;
+  QFavorite favorite = QFavorite.favorite;
 
   @Override
   public List<Link> findAllActive() {
@@ -31,7 +34,11 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
 
   @Override
   public List<Link> findMyLinksByCategoryId(Long categoryId, Long userId) {
-    List<Link> result = query.selectFrom(link).where(link.deleteTf.eq(false).and(link.categoryId.eq(categoryId)).and(link.userId.eq(userId))).fetch();
+    List<Link> result = query.selectFrom(link).
+            where(link.deleteTf.eq(false)
+                    .and(link.categoryId.eq(categoryId))
+                    .and(link.userId.eq(userId)))
+            .fetch();
 
     return result;
   }
@@ -39,6 +46,26 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
   @Override
   public List<Link> findBuddyLinksByCategoryId(Long categoryId) {
     List<Link> result = query.selectFrom(link).where(link.deleteTf.eq(false).and(link.categoryId.eq(categoryId))).fetch();
+
+    return result;
+  }
+
+  @Override
+  public List<Link> getMyFavoriteLinks(Long userId) {
+    List<Link> result = query.selectFrom(link)
+            .leftJoin(favorite).on(link.id.eq(favorite.linkId))
+            .where(favorite.userId.eq(userId).and(link.deleteTf.eq(false)))
+            .fetch();
+
+    return result;
+  }
+
+  @Override
+  public Long findMyLinkCount(Long userId) {
+    Long result = query.select(link.count())
+            .from(link)
+            .where(link.deleteTf.eq(false).and(link.userId.eq(userId)))
+            .fetchOne();
 
     return result;
   }

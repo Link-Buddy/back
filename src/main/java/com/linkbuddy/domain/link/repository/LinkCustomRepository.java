@@ -26,6 +26,9 @@ public interface LinkCustomRepository {
 
   List<Link> findBuddyLinksByCategoryId(Long categoryId);
 
+  List<Link> getMyFavoriteLinks(Long userId);
+
+  Long findMyLinkCount(Long userId);
 
   Link findOneActive(Long id);
 
