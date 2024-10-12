@@ -93,7 +93,7 @@ public class UserController {
   @GetMapping("/my")
   public ResponseEntity getUser() throws Exception {
     Long userId = securityUtil.getCurrentUserId();
-    User myInfo = userService.findById(userId);
+    UserDTO.UserInfo myInfo = userService.findMyInfo(userId);
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
             .data(myInfo)

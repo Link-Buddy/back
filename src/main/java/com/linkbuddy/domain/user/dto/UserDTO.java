@@ -29,6 +29,22 @@ public class UserDTO {
   private Integer statusCd;
   private Long fileId;
 
+  @Getter
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  public static class UserInfo {
+    private Long id;
+    private String email;
+    private String name;
+    private Long linkCount;
+
+    @Builder
+    public UserInfo(User user, Long linkCount) {
+      this.id = user.getId();
+      this.email = user.getEmail();
+      this.name = user.getName();
+      this.linkCount = linkCount;
+    }
+  }
 
   @Getter
   @NoArgsConstructor(access = AccessLevel.PROTECTED)

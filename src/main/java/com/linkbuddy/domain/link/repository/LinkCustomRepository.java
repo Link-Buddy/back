@@ -1,5 +1,6 @@
 package com.linkbuddy.domain.link.repository;
 
+import com.linkbuddy.domain.link.LinkDto;
 import com.linkbuddy.global.entity.Link;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import jakarta.transaction.Transactional;
@@ -25,6 +26,9 @@ public interface LinkCustomRepository {
 
   List<Link> findBuddyLinksByCategoryId(Long categoryId);
 
+  List<Link> getMyFavoriteLinks(Long userId);
+
+  LinkDto.Mylink findMyLink(Long userId);
 
   Link findOneActive(Long id);
 

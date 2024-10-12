@@ -37,6 +37,13 @@ public class LinkService {
     }
   }
 
+  public List<Link> getMyFavoriteLinks(Long userId) throws Exception {
+
+    return linkRepository.getMyFavoriteLinks(userId);
+
+  }
+
+
   public List<Link> findBuddyLinksByCategoryId(Long categoryId, Long userId, Long buddyId) throws Exception {
     try {
       //TODO : 해당 유저가 특정 buddy에 포함되는지 확인
@@ -62,6 +69,9 @@ public class LinkService {
     }
   }
 
+  public LinkDto.Mylink findMyLinkCount(Long userId) throws Exception {
+    return linkRepository.findMyLink(userId);
+  }
 
   public Link save(LinkDto.Create linkDto, Long userId) throws Exception {
     try {

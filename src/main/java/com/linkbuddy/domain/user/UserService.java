@@ -2,6 +2,8 @@ package com.linkbuddy.domain.user;
 
 import com.linkbuddy.domain.category.CategoryDto;
 import com.linkbuddy.domain.category.CategoryService;
+import com.linkbuddy.domain.link.LinkDto;
+import com.linkbuddy.domain.link.LinkService;
 import com.linkbuddy.domain.user.dto.UserDTO;
 import com.linkbuddy.domain.user.repository.UserRepository;
 import com.linkbuddy.global.config.jwt.JwtToken;
@@ -38,6 +40,8 @@ public class UserService {
   PasswordEncoder passwordEncoder;
   @Autowired
   private CategoryService categoryService;
+  @Autowired
+  private LinkService linkService;
 
   public User create(User user) throws Exception {
     try {
@@ -79,10 +83,14 @@ public class UserService {
     }
   }
 
-  public User findById(Long userId) throws Exception {
+  public UserDTO.UserInfo findMyInfo(Long userId) throws Exception {
     try {
-      return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found." + userId));
-
+      User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found." + userId));
+      LinkDto.Mylink myCount = linkService.findMyLinkCount(userId);
+      return UserDTO.UserInfo.builder()
+              .user(user)
+              .linkCount(myCount.getLinkCount()) // LinkDto.Mylink에서 linkCount 추출
+              .build();
     } catch (Exception e) {
       throw new Exception(e);
     }

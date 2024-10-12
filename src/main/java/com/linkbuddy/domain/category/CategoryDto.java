@@ -33,16 +33,18 @@ public class CategoryDto {
     private Long shareTypeCd;
     private Long userId;
     private Timestamp createdAt;
+    private Long linkCount;
 
     @Builder
     @QueryProjection
-    public PrivateCategory(Category c) {
+    public PrivateCategory(Category c, Long linkCount) {
       this.id = c.getId();
       this.categoryName = c.getCategoryName();
       this.fileId = c.getFileId();
       this.shareTypeCd = c.getShareTypeCd();
       this.userId = c.getUserId();
       this.createdAt = c.getCreatedAt();
+      this.linkCount = linkCount;
     }
   }
 
@@ -75,10 +77,11 @@ public class CategoryDto {
     private Long userId;
     private Long buddyId;
     private Timestamp createdAt;
+    private Long linkCount;
 
     @Builder
     @QueryProjection
-    public BuddyCategory(Category c) {
+    public BuddyCategory(Category c, Long linkCount) {
       this.id = c.getId();
       this.categoryName = c.getCategoryName();
       this.fileId = c.getFileId();
@@ -86,6 +89,7 @@ public class CategoryDto {
       this.userId = c.getUserId();
       this.buddyId = c.getBuddyId();
       this.createdAt = c.getCreatedAt();
+      this.linkCount = linkCount;
     }
   }
 

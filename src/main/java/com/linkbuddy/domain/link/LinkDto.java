@@ -1,11 +1,17 @@
 package com.linkbuddy.domain.link;
 
 
+import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.Link;
+import com.linkbuddy.global.entity.User;
+import com.querydsl.core.annotations.QueryProjection;
+import com.querydsl.core.types.dsl.NumberExpression;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
+
+import java.sql.Timestamp;
 
 /**
  * packageName    : com.linkbuddy.domain.link
@@ -20,6 +26,22 @@ import org.hibernate.validator.constraints.Length;
  */
 
 public class LinkDto {
+  @Getter
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  public static class Mylink {
+
+    private Long linkCount;
+    //  private Long favoriteCount;
+
+    @Builder
+    @QueryProjection
+    public Mylink(Long linkCount) {
+
+      this.linkCount = linkCount;
+      //   this.favoriteCount = favoriteCount;
+    }
+
+  }
 
   @Getter
   @NoArgsConstructor
