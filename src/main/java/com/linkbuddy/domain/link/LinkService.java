@@ -172,4 +172,16 @@ public class LinkService {
       throw new Exception(e);
     }
   }
+
+  public List<LinkDto.SearchResponse> searchLinks(Long userId, String keyword) throws Exception {
+    try {
+      List<LinkDto.SearchResponse> searchList = linkRepository.findLinksByKeyword(userId, keyword);
+      return searchList;
+
+    } catch (Exception e) {
+      System.out.println("e");
+      throw new Exception(e);
+
+    }
+  }
 }

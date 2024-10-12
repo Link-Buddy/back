@@ -100,5 +100,18 @@ public class LinkController {
             .build());
   }
 
+  private Long getCurrentUserId() {
+    return (long) 1234;
+    //userServic.getCurrentUserId();
+  }
 
+  @GetMapping("/search")
+  public ResponseEntity searchLinks(@RequestParam("keyword") String keyword) throws Exception {
+    Long userId = securityUtil.getCurrentUserId();
+    List<LinkDto.SearchResponse> searchList = linkService.searchLinks(userId, keyword);
+
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK).data(searchList)
+            .build());
+  }
 }

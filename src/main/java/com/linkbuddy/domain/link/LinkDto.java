@@ -44,6 +44,28 @@ public class LinkDto {
   }
 
   @Getter
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  public static class SearchResponse {
+    private String categoryName;
+    private Long shareTypeCd;
+    private String buddyName;
+    private String linkName;
+    private String linkDescription;
+    private String linkUrl;
+
+    @Builder
+    @QueryProjection
+    public SearchResponse(String categoryName, Long shareTypeCd, String buddyName, String linkName, String linkDescription, String linkUrl) {
+      this.categoryName = categoryName;
+      this.shareTypeCd = shareTypeCd;
+      this.buddyName = buddyName;
+      this.linkName = linkName;
+      this.linkDescription = linkDescription;
+      this.linkUrl = linkUrl;
+    }
+  }
+
+  @Getter
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Create {

@@ -36,7 +36,8 @@ public interface LinkCustomRepository {
 
   JPAUpdateClause changeBuddyCategoryIdByIds(List<Long> ids, Long newCategoryId);
 
-
   //해당 폴더 내의 모든 링크들
+
+  List<LinkDto.SearchResponse> findLinksByKeyword(Long userId, String keyword);
 
 }
