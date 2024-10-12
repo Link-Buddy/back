@@ -1,5 +1,6 @@
 package com.linkbuddy.domain.link.repository;
 
+import com.linkbuddy.domain.link.LinkDto;
 import com.linkbuddy.global.entity.Link;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import jakarta.transaction.Transactional;
@@ -32,7 +33,8 @@ public interface LinkCustomRepository {
 
   JPAUpdateClause changeBuddyCategoryIdByIds(List<Long> ids, Long newCategoryId);
 
-
   //해당 폴더 내의 모든 링크들
+
+  List<LinkDto.SearchResponse> findLinksByKeyword(Long userId, String keyword);
 
 }

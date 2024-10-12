@@ -1,5 +1,6 @@
 package com.linkbuddy.global.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.linkbuddy.domain.link.LinkDto;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -46,6 +47,11 @@ public class Link {
 
   @Column(name = "user_id", nullable = true)
   private Long userId;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "category_id", referencedColumnName = "id", insertable = false, updatable = false)
+  @JsonIgnore
+  private Category category;
 
 
   @Builder

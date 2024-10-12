@@ -1,5 +1,6 @@
 package com.linkbuddy.global.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.linkbuddy.domain.category.CategoryDto;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -58,6 +59,11 @@ public class Category {
   @UpdateTimestamp    //Update 쿼리 발생시 현재 시간 값 적용
   @Column(name = "updated_at")
   private Timestamp updatedAt;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "buddy_id", referencedColumnName = "id", insertable = false, updatable = false)
+  @JsonIgnore
+  private Buddy buddy;
 
   @Builder
   public Category(String categoryName, Long shareTypeCd, Long userId, Long buddyId) {

@@ -1,8 +1,8 @@
 package com.linkbuddy.domain.link.repository;
 
-import com.linkbuddy.global.entity.Link;
-import com.linkbuddy.global.entity.QCategory;
-import com.linkbuddy.global.entity.QLink;
+import com.linkbuddy.domain.link.LinkDto;
+import com.linkbuddy.domain.link.QLinkDto_SearchResponse;
+import com.linkbuddy.global.entity.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import jakarta.transaction.Transactional;
@@ -19,6 +19,8 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
   private final JPAQueryFactory query;
   QLink link = QLink.link;
   QCategory category = QCategory.category;
+  QBuddy buddy = QBuddy.buddy;
+  QBuddyUser buddyUser = QBuddyUser.buddyUser;
 
   @Override
   public List<Link> findAllActive() {
@@ -74,5 +76,29 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
             .execute();
     return updatedLinks;
   }
+
+  @Override
+  public List<LinkDto.SearchResponse> findLinksByKeyword(Long userId, String keyword) {
+    List<LinkDto.SearchResponse> result = query.select(new QLinkDto_SearchResponse(
+            category.categoryName,
+            category.shareTypeCd,
+            buddy.name,
+            link.name,
+            link.description,
+            link.linkUrl
+    ))
+            .from(link)
+            .innerJoin(link.category, category)
+            .leftJoin(category.buddy, buddy)
+            .leftJoin(buddyUser)
+            .on(buddyUser.buddy.id.eq(buddy.id)
+                    .and(buddyUser.userId.eq(userId))
+                    .and(buddyUser.acceptTf.isTrue()))
+            .where(link.userId.eq(userId).and(link.deleteTf.isFalse()).and(link.name.contains(keyword).or(link.description.contains(keyword))))
+            .fetch();
+
+    return result;
+  }
+
 
 }
