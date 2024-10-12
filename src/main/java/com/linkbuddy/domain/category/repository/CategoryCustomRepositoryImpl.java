@@ -43,9 +43,14 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
 
   @Override
   public List<CategoryDto.PrivateCategory> findMyPrivateCategories(Long userId, Long shareTypeCd) {
-    List<CategoryDto.PrivateCategory> result = query.select(new QCategoryDto_PrivateCategory(category))
+    List<CategoryDto.PrivateCategory> result = query.select(new QCategoryDto_PrivateCategory(category, link.count()))
             .from(category)
-            .where(category.userId.eq(userId).and(category.shareTypeCd.eq(shareTypeCd)).and(category.deleteTf.eq(false)))
+            .leftJoin(link).on(link.categoryId.eq(category.id))
+            .where(category.userId.eq(userId)
+                    .and(category.shareTypeCd.eq(shareTypeCd))
+                    .and(category.deleteTf.eq(false))
+                    .and(link.deleteTf.eq(false)))
+            .groupBy(category.id)
             .fetch();
 
     return result;
@@ -67,13 +72,15 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
   @Override
   public List<CategoryDto.BuddyCategory> findMyBuddyCategoriesByBuddyId(Long userId, Long shareTypeCd, Long buddyId) {
 
-    List<CategoryDto.BuddyCategory> result = query.select(new QCategoryDto_BuddyCategory(category))
+    List<CategoryDto.BuddyCategory> result = query.select(new QCategoryDto_BuddyCategory(category, link.count()))
             .from(category)
             .leftJoin(buddyUser).on(category.buddyId.eq(buddyUser.buddyId))
+            .leftJoin(link).on(link.categoryId.eq(category.id).and(link.deleteTf.eq(false)))
             .where(category.shareTypeCd.eq(shareTypeCd)
                     .and(category.deleteTf.eq(false))
                     .and(buddyUser.buddyId.eq(buddyId))
                     .and(buddyUser.userId.eq(userId)))
+            .groupBy(category.id)
             .fetch();
 
     return result;

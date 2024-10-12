@@ -1,5 +1,6 @@
 package com.linkbuddy.domain.user.dto;
 
+import com.linkbuddy.domain.link.LinkDto;
 import com.linkbuddy.global.entity.Link;
 import com.linkbuddy.global.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
@@ -29,6 +30,24 @@ public class UserDTO {
   private Integer statusCd;
   private Long fileId;
 
+  @Getter
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  public static class UserInfo {
+    private Long id;
+    private String email;
+    private String name;
+    private Long linkCount;
+    private Long favoriteCount;
+
+    @Builder
+    public UserInfo(User user, LinkDto.Mylink my) {
+      this.id = user.getId();
+      this.email = user.getEmail();
+      this.name = user.getName();
+      this.linkCount = my.getLinkCount();
+      this.favoriteCount = my.getFavoriteCount();
+    }
+  }
 
   @Getter
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
