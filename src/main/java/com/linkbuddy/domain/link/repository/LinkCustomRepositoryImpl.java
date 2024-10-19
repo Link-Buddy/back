@@ -1,5 +1,6 @@
 package com.linkbuddy.domain.link.repository;
 
+import com.linkbuddy.domain.category.CategoryDto;
 import com.linkbuddy.domain.link.LinkDto;
 import com.linkbuddy.domain.link.QLinkDto_SearchResponse;
 import com.linkbuddy.domain.link.QLinkDto_Mylink;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -33,13 +35,22 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
   }
 
   @Override
-  public List<Link> findMyLinksByCategoryId(Long categoryId, Long userId) {
-    List<Link> result = query.selectFrom(link).
-            where(link.deleteTf.eq(false)
+  public List<LinkDto.LinkInfo> findMyLinksByCategoryId(Long categoryId, Long userId) {
+    List<LinkDto.LinkInfo> result = query.select(link, favorite.id.isNotNull().as("isFavorite"))
+            .from(link)
+            .leftJoin(favorite).on(link.id.eq(favorite.linkId)
+                    .and((favorite.userId.eq(userId))))
+            .where(link.deleteTf.eq(false)
                     .and(link.categoryId.eq(categoryId))
                     .and(link.userId.eq(userId)))
-            .fetch();
-
+            .fetch()
+            .stream()
+            .map(tuple -> {
+              Link linkEntity = tuple.get(0, Link.class);
+              Boolean isFavorite = tuple.get(1, Boolean.class);
+              return new LinkDto.LinkInfo(linkEntity, isFavorite);
+            })
+            .collect(Collectors.toList());
     return result;
   }
 
@@ -103,6 +114,19 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
             .execute();
     return updatedLinks;
   }
+
+  @Override
+  public Boolean isMyLink(Long linkId, Long userId) {
+    return query.selectOne()
+            .from(link)
+            .leftJoin(category).on(link.categoryId.eq(category.id))
+            .leftJoin(buddyUser).on(buddyUser.buddyId.eq(category.buddyId))
+            .where(link.id.eq(linkId)
+                    .and(link.userId.eq(userId)
+                            .or(buddyUser.userId.eq(userId))))
+            .fetchFirst() != null;
+  }
+
 
   @Override
   public List<LinkDto.SearchResponse> findLinksByKeyword(Long userId, String keyword) {

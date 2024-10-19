@@ -27,7 +27,7 @@ public class LinkController {
   @GetMapping("category/{categoryId}")
   public ResponseEntity getLinksByCategoryId(@PathVariable("categoryId") Long categoryId) throws Exception {
     Long userId = securityUtil.getCurrentUserId();
-    List<Link> links = linkService.findMyByCategoryId(categoryId, userId);
+    List<LinkDto.LinkInfo> links = linkService.findMyByCategoryId(categoryId, userId);
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
             .data(links)

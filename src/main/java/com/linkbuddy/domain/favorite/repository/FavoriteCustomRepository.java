@@ -13,4 +13,8 @@ package com.linkbuddy.domain.favorite.repository;
  */
 public interface FavoriteCustomRepository {
   Long findMyFavoriteCount(Long userId);
+
+  Boolean isExistFavoriteLink(Long linkId, Long userId);
+
+  void deleteFavoriteLink(Long linkId, Long userId);
 }
