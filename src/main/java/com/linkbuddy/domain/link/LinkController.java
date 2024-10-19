@@ -90,10 +90,10 @@ public class LinkController {
             .build());
   }
 
-  @PutMapping("change-category")
-  public ResponseEntity changeCategory(@RequestParam("categoryId") Long newCategoryId, @RequestBody List<Long> linkIds) throws Exception {
-
-    linkService.changeCategoryIdByIds(linkIds, newCategoryId);
+  @PutMapping("change-category/{categoryId}")
+  public ResponseEntity changeCategory(@PathVariable("categoryId") Long newCategoryId, @RequestBody List<Long> linkIds) throws Exception {
+    Long userId = securityUtil.getCurrentUserId();
+    linkService.changeCategoryIdByIds(linkIds, newCategoryId, userId);
 
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK).data("")
