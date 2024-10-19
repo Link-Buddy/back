@@ -5,6 +5,7 @@ import com.linkbuddy.domain.category.repository.CategoryRepository;
 import com.linkbuddy.domain.favorite.repository.FavoriteRepository;
 import com.linkbuddy.domain.link.repository.LinkRepository;
 import com.linkbuddy.domain.user.dto.UserDTO;
+import com.linkbuddy.global.config.jwt.SecurityUtil;
 import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.Link;
 import lombok.extern.slf4j.Slf4j;
@@ -134,9 +135,8 @@ public class LinkService {
     }
   }
 
-  public void changeCategoryIdByIds(List<Long> linkIds, Long newCategoryId) throws Exception {
+  public void changeCategoryIdByIds(List<Long> linkIds, Long newCategoryId, Long userId) throws Exception {
     try {
-      Long userId = (long) 1; //getUserId;
       Long privateShareCd = (long) 10; //getShareCode
       Long BuddyShareCd = (long) 20; //getShareCode
 
