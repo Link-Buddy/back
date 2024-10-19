@@ -45,11 +45,10 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
   public List<CategoryDto.PrivateCategory> findMyPrivateCategories(Long userId, Long shareTypeCd) {
     List<CategoryDto.PrivateCategory> result = query.select(new QCategoryDto_PrivateCategory(category, link.count()))
             .from(category)
-            .leftJoin(link).on(link.categoryId.eq(category.id))
+            .leftJoin(link).on(link.categoryId.eq(category.id).and(link.deleteTf.eq(false)))
             .where(category.userId.eq(userId)
                     .and(category.shareTypeCd.eq(shareTypeCd))
-                    .and(category.deleteTf.eq(false))
-                    .and(link.deleteTf.eq(false)))
+                    .and(category.deleteTf.eq(false)))
             .groupBy(category.id)
             .fetch();
 

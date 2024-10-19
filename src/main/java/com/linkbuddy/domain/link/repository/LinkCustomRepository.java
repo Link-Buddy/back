@@ -22,7 +22,7 @@ import java.util.List;
 public interface LinkCustomRepository {
   List<Link> findAllActive();
 
-  List<Link> findMyLinksByCategoryId(Long categoryId, Long userId);
+  List<LinkDto.LinkInfo> findMyLinksByCategoryId(Long categoryId, Long userId);
 
   List<Link> findBuddyLinksByCategoryId(Long categoryId);
 
@@ -35,6 +35,8 @@ public interface LinkCustomRepository {
   JPAUpdateClause changePrivateCategoryIdByIds(List<Long> ids, Long newCategoryId, Long userId);
 
   JPAUpdateClause changeBuddyCategoryIdByIds(List<Long> ids, Long newCategoryId);
+
+  Boolean isMyLink(Long linkId, Long userId);
 
   //해당 폴더 내의 모든 링크들
 

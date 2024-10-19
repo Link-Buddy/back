@@ -119,4 +119,29 @@ public class LinkDto {
       this.userId = l.getUserId();
     }
   }
+
+
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class LinkInfo {
+    private Long id;
+    private String name;
+    private Long userId;
+    private String description;
+    private String linkUrl;
+    private Long categoryId;
+    private Boolean isFavorite; // 즐겨찾기 여부
+
+    @Builder
+    public LinkInfo(Link l, Boolean isFavorite) {
+      this.id = l.getId();
+      this.name = l.getName();
+      this.userId = l.getUserId();
+      this.description = l.getDescription();
+      this.linkUrl = l.getLinkUrl();
+      this.categoryId = l.getCategoryId();
+      this.isFavorite = isFavorite; // isFavorite 필드 추가
+    }
+  }
 }

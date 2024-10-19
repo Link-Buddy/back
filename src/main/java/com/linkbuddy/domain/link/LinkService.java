@@ -31,7 +31,7 @@ public class LinkService {
     return linkRepository.findAllActive();
   }
 
-  public List<Link> findMyByCategoryId(Long categoryId, Long userId) throws Exception {
+  public List<LinkDto.LinkInfo> findMyByCategoryId(Long categoryId, Long userId) throws Exception {
     try {
       return linkRepository.findMyLinksByCategoryId(categoryId, userId);
     } catch (Exception e) {
