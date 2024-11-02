@@ -44,6 +44,8 @@ dependencies {
     annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
     //oauth
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    // Jsoup - html crawling
+    implementation 'org.jsoup:jsoup:1.15.3'
 }
 
 def querydslSrcDir = 'src/main/generated'

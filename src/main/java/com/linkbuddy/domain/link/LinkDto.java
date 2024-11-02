@@ -143,5 +143,35 @@ public class LinkDto {
       this.categoryId = l.getCategoryId();
       this.isFavorite = isFavorite; // isFavorite 필드 추가
     }
+
+  }
+
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class LinkInfoData {
+    private Long id;
+    private String name;
+    private Long userId;
+    private String description;
+    private String linkUrl;
+    private Long categoryId;
+    private Boolean isFavorite; // 즐겨찾기 여부
+    private String imageUrl; // url image url
+    private String urlTitle;  // url title
+
+    @Builder
+    public LinkInfoData(LinkDto.LinkInfo lInfo, String imageUrl, String urlTitle) {
+      this.id = lInfo.getId();
+      this.name = lInfo.getName();
+      this.userId = lInfo.getUserId();
+      this.description = lInfo.getDescription();
+      this.linkUrl = lInfo.getLinkUrl();
+      this.categoryId = lInfo.getCategoryId();
+      this.isFavorite = lInfo.getIsFavorite();
+      this.imageUrl = imageUrl;
+      this.urlTitle = urlTitle;
+    }
+
   }
 }

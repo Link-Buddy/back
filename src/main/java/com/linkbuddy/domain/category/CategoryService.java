@@ -158,4 +158,15 @@ public class CategoryService {
       throw new Exception(e);
     }
   }
+
+  public Category getCategory(Long id) throws Exception {
+    try {
+      Category category = categoryRepository.findCategoryById(id);
+      return category;
+
+    } catch (Exception e) {
+      System.out.println("e" + e);
+      throw new Exception(e);
+    }
+  }
 }
