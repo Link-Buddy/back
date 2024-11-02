@@ -1,11 +1,8 @@
 package com.linkbuddy.domain.link.repository;
 
-import com.linkbuddy.domain.category.CategoryDto;
 import com.linkbuddy.domain.link.LinkDto;
 import com.linkbuddy.domain.link.QLinkDto_SearchResponse;
-import com.linkbuddy.domain.link.QLinkDto_Mylink;
 import com.linkbuddy.global.entity.*;
-import com.linkbuddy.domain.category.CategoryDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import jakarta.transaction.Transactional;
@@ -62,20 +59,70 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
   }
 
   @Override
-  public List<Link> getMyFavoriteLinks(Long userId) {
-    List<Link> result = query.selectFrom(link)
-            .leftJoin(favorite).on(link.id.eq(favorite.linkId))
-            .where(favorite.userId.eq(userId).and(link.deleteTf.eq(false)))
-            .fetch();
+  public List<LinkDto.SearchResponse> getMyFavoriteLinks(Long userId) {
+
+    List<LinkDto.SearchResponse> result =
+            query.select(new QLinkDto_SearchResponse(link, category, buddy.name))
+                    .from(link)
+                    .innerJoin(favorite).on(link.id.eq(favorite.linkId))
+                    .leftJoin(category).on(link.categoryId.eq(category.id))
+                    .leftJoin(buddy).on(category.buddyId.eq(buddy.id))
+                    .leftJoin(buddyUser)
+                    .on(buddyUser.buddyId.eq(buddy.id)
+                            .and(buddyUser.userId.eq(userId))
+                            .and(buddyUser.acceptTf.isTrue()))
+                    .where(link.userId.eq(userId)
+                            .and(link.deleteTf.isFalse())
+                            .and(favorite.id.isNotNull()))
+                    .orderBy(favorite.createdAt.desc()) //최신정렬
+                    .fetch();
+
 
     return result;
   }
 
+  public Long findMyFavoriteCount(Long userId) {
+    // 전체 결과 개수 구하기
+    Long count = query.select(link.count())
+            .from(link)
+            .innerJoin(favorite).on(link.id.eq(favorite.linkId))
+            .where(link.userId.eq(userId)
+                    .and(link.deleteTf.isFalse())
+                    .and(favorite.id.isNotNull()))
+            .fetchOne();
+
+    return count;
+  }
+
+  public List<LinkDto.SearchResponse> getMyRegistedLinks(Long userId) {
+    List<LinkDto.SearchResponse> result =
+            query.select(new QLinkDto_SearchResponse(link, category, buddy.name))
+                    .from(link)
+                    .innerJoin(link.category, category)
+                    .leftJoin(category.buddy, buddy)
+                    .leftJoin(buddyUser)
+                    .on(buddyUser.buddy.id.eq(buddy.id)
+                            .and(buddyUser.userId.eq(userId))
+                            .and(buddyUser.acceptTf.isTrue()))
+                    .where(link.userId.eq(userId).and(link.deleteTf.isFalse()))
+                    .orderBy(link.createdAt.desc()) //최신정렬
+                    .fetch();
+
+    return result;
+  }
+
+
   @Override
-  public Long findMyLinkCount(Long userId) {
+  public Long findMyRegistedCount(Long userId) {
     Long result = query.select(link.count())
             .from(link)
-            .where(link.deleteTf.eq(false).and(link.userId.eq(userId)))
+            .innerJoin(link.category, category)
+            .leftJoin(category.buddy, buddy)
+            .leftJoin(buddyUser)
+            .on(buddyUser.buddy.id.eq(buddy.id)
+                    .and(buddyUser.userId.eq(userId))
+                    .and(buddyUser.acceptTf.isTrue()))
+            .where(link.userId.eq(userId).and(link.deleteTf.isFalse()))
             .fetchOne();
 
     return result;
@@ -130,23 +177,17 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
 
   @Override
   public List<LinkDto.SearchResponse> findLinksByKeyword(Long userId, String keyword) {
-    List<LinkDto.SearchResponse> result = query.select(new QLinkDto_SearchResponse(
-            category.categoryName,
-            category.shareTypeCd,
-            buddy.name,
-            link.name,
-            link.description,
-            link.linkUrl
-    ))
-            .from(link)
-            .innerJoin(link.category, category)
-            .leftJoin(category.buddy, buddy)
-            .leftJoin(buddyUser)
-            .on(buddyUser.buddy.id.eq(buddy.id)
-                    .and(buddyUser.userId.eq(userId))
-                    .and(buddyUser.acceptTf.isTrue()))
-            .where(link.userId.eq(userId).and(link.deleteTf.isFalse()).and(link.name.contains(keyword).or(link.description.contains(keyword))))
-            .fetch();
+    List<LinkDto.SearchResponse> result =
+            query.select(new QLinkDto_SearchResponse(link, category, buddy.name))
+                    .from(link)
+                    .innerJoin(link.category, category)
+                    .leftJoin(category.buddy, buddy)
+                    .leftJoin(buddyUser)
+                    .on(buddyUser.buddy.id.eq(buddy.id)
+                            .and(buddyUser.userId.eq(userId))
+                            .and(buddyUser.acceptTf.isTrue()))
+                    .where(link.userId.eq(userId).and(link.deleteTf.isFalse()).and(link.name.contains(keyword).or(link.description.contains(keyword))))
+                    .fetch();
 
     return result;
   }

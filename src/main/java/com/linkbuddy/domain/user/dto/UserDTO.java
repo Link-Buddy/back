@@ -44,7 +44,7 @@ public class UserDTO {
       this.id = user.getId();
       this.email = user.getEmail();
       this.name = user.getName();
-      this.linkCount = my.getLinkCount();
+      this.linkCount = my.getRegistedCount();
       this.favoriteCount = my.getFavoriteCount();
     }
   }
