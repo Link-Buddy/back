@@ -1,6 +1,8 @@
 package com.linkbuddy.domain.link;
 
+import com.linkbuddy.domain.category.CategoryService;
 import com.linkbuddy.global.config.jwt.SecurityUtil;
+import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.Link;
 import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
@@ -11,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("links")
 @RestController
@@ -21,16 +25,27 @@ public class LinkController {
   @Autowired
   private LinkService linkService;
   @Autowired
+  private CategoryService categoryService;
+  @Autowired
   SecurityUtil securityUtil;
 
 
   @GetMapping("category/{categoryId}")
   public ResponseEntity getLinksByCategoryId(@PathVariable("categoryId") Long categoryId) throws Exception {
+    // userId 조회
     Long userId = securityUtil.getCurrentUserId();
-    List<LinkDto.LinkInfo> links = linkService.findMyByCategoryId(categoryId, userId);
+    // 카테고리 데이터 조회
+    Category category = categoryService.getCategory(categoryId);
+    // 링크 리스트 조회
+    List<LinkDto.LinkInfoData> links = linkService.findMyByCategoryId(categoryId, userId);
+
+    Map<String, Object> linkMap = new HashMap<>();
+    linkMap.put("category", category);
+    linkMap.put("links", links);
+
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
-            .data(links)
+            .data(linkMap)
             .build());
   }
 

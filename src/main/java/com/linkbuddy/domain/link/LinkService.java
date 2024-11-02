@@ -9,12 +9,17 @@ import com.linkbuddy.global.config.jwt.SecurityUtil;
 import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.Link;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.jsoup.Jsoup;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -32,9 +37,24 @@ public class LinkService {
     return linkRepository.findAllActive();
   }
 
-  public List<LinkDto.LinkInfo> findMyByCategoryId(Long categoryId, Long userId) throws Exception {
+  public List<LinkDto.LinkInfoData> findMyByCategoryId(Long categoryId, Long userId) throws Exception {
     try {
-      return linkRepository.findMyLinksByCategoryId(categoryId, userId);
+      // 내 링크 조회 by categoryId
+      List<LinkDto.LinkInfo> linkList = linkRepository.findMyLinksByCategoryId(categoryId, userId);
+
+      // link preview image url 추가
+      List<LinkDto.LinkInfoData> newLinkList = new ArrayList<>();
+      for (LinkDto.LinkInfo linkInfo : linkList) {
+        Map<String, String> previewData = getLinkPreviewData(linkInfo.getLinkUrl());
+        LinkDto.LinkInfoData newLinkInfo = LinkDto.LinkInfoData.builder()
+                .lInfo(linkInfo)
+                .imageUrl(previewData.get("imageUrl"))
+                .urlTitle(previewData.get("title"))
+                .build();
+        newLinkList.add(newLinkInfo);
+      }
+      return newLinkList;
+
     } catch (Exception e) {
       System.out.println("e");
       throw new Exception(e);
@@ -182,6 +202,44 @@ public class LinkService {
       System.out.println("e");
       throw new Exception(e);
 
+    }
+  }
+
+  /**
+   * 링크 preview image
+   * @param url
+   * @return
+   * @throws Exception
+   */
+  public Map<String, String> getLinkPreviewData(String url) throws Exception {
+    try {
+      // link preview
+      // Jsoup으로 HTML 문서 가져오기 및 파싱
+      Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0").get();
+      // 메타데이터 추출
+      String title = doc.title();
+      String imageUrl = doc.select("meta[property=og:image]").attr("content");
+      String description = doc.select("meta[name=description]").attr("content");
+      // 첫번째 img 태그 선택하고, 태그 있는지 확인
+      // img 태그의 src 속성에 있는 절대 URL 가져와서 absUrl은 상대 경로 URL을 절대 URL로 변환
+      if (imageUrl.isEmpty()) {
+        imageUrl = doc.select("img").first() != null ? doc.select("img").first().absUrl("src") : "";
+      }
+
+      // 응답 데이터
+      Map<String, String> preview = new HashMap<>();
+      preview.put("title", title);
+      preview.put("imageUrl", imageUrl);
+      preview.put("description", description);
+
+      preview.forEach((key, value) -> {
+        System.out.println(key + " : " + value);
+      });
+      return preview;
+
+    } catch (Exception e) {
+      System.out.println("e");
+      throw new Exception(e);
     }
   }
 }
