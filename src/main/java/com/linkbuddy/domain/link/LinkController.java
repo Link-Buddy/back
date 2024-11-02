@@ -34,6 +34,30 @@ public class LinkController {
             .build());
   }
 
+  //좋아요 누른 게시글
+  @GetMapping("favorite")
+  public ResponseEntity getMyFavoriteLinks() throws Exception {
+    Long userId = securityUtil.getCurrentUserId();
+    List<LinkDto.SearchResponse> links = linkService.getMyFavoriteLinks(userId);
+
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(links)
+            .build());
+  }
+
+  //내가 등록한 링크
+  @GetMapping("registed")
+  public ResponseEntity getMyRegistedLinks() throws Exception {
+    Long userId = securityUtil.getCurrentUserId();
+    List<LinkDto.SearchResponse> links = linkService.getMyRegistedLinks(userId);
+
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(links)
+            .build());
+  }
+
   @GetMapping("{id}")
   public ResponseEntity getLink(@PathVariable("id") Long id) throws Exception {
 
@@ -42,18 +66,6 @@ public class LinkController {
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
             .data(link)
-            .build());
-  }
-
-  //좋아요 누른 게시글
-  @GetMapping("favorite")
-  public ResponseEntity getMyFavoriteLinks() throws Exception {
-    Long userId = securityUtil.getCurrentUserId();
-    List<Link> links = linkService.getMyFavoriteLinks(userId);
-
-    return ResponseEntity.ok(ResponseMessage.builder()
-            .status(StatusEnum.OK)
-            .data(links)
             .build());
   }
 

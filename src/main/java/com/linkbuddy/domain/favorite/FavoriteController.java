@@ -1,8 +1,8 @@
 package com.linkbuddy.domain.favorite;
 
+import com.linkbuddy.domain.link.LinkDto;
 import com.linkbuddy.global.config.jwt.SecurityUtil;
 
-import com.linkbuddy.global.entity.Favorite;
 import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +39,6 @@ public class FavoriteController {
             .status(StatusEnum.OK).data("")
             .build());
   }
+
 
 }

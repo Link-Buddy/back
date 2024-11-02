@@ -3,15 +3,12 @@ package com.linkbuddy.domain.link;
 
 import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.Link;
-import com.linkbuddy.global.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
-import com.querydsl.core.types.dsl.NumberExpression;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
-import java.sql.Timestamp;
 
 /**
  * packageName    : com.linkbuddy.domain.link
@@ -30,14 +27,14 @@ public class LinkDto {
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   public static class Mylink {
 
-    private Long linkCount;
+    private Long registedCount;
     private Long favoriteCount;
 
     @Builder
     @QueryProjection
-    public Mylink(Long linkCount, Long favoriteCount) {
+    public Mylink(Long registedCount, Long favoriteCount) {
 
-      this.linkCount = linkCount;
+      this.registedCount = registedCount;
       this.favoriteCount = favoriteCount;
     }
 
@@ -46,6 +43,7 @@ public class LinkDto {
   @Getter
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   public static class SearchResponse {
+    private Long linkId;
     private String categoryName;
     private Long shareTypeCd;
     private String buddyName;
@@ -55,13 +53,15 @@ public class LinkDto {
 
     @Builder
     @QueryProjection
-    public SearchResponse(String categoryName, Long shareTypeCd, String buddyName, String linkName, String linkDescription, String linkUrl) {
-      this.categoryName = categoryName;
-      this.shareTypeCd = shareTypeCd;
+    public SearchResponse(Link l, Category c, String buddyName) {
+      System.out.println(l);
+      this.linkId = l.getId();
+      this.categoryName = c.getCategoryName();
+      this.shareTypeCd = c.getShareTypeCd();
       this.buddyName = buddyName;
-      this.linkName = linkName;
-      this.linkDescription = linkDescription;
-      this.linkUrl = linkUrl;
+      this.linkName = l.getName();
+      this.linkDescription = l.getDescription();
+      this.linkUrl = l.getLinkUrl();
     }
   }
 

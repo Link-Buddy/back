@@ -3,7 +3,6 @@ package com.linkbuddy.domain.link.repository;
 import com.linkbuddy.domain.link.LinkDto;
 import com.linkbuddy.global.entity.Link;
 import com.querydsl.jpa.impl.JPAUpdateClause;
-import jakarta.transaction.Transactional;
 
 import java.util.List;
 
@@ -26,9 +25,13 @@ public interface LinkCustomRepository {
 
   List<Link> findBuddyLinksByCategoryId(Long categoryId);
 
-  List<Link> getMyFavoriteLinks(Long userId);
+  List<LinkDto.SearchResponse> getMyFavoriteLinks(Long userId);
 
-  Long findMyLinkCount(Long userId);
+  List<LinkDto.SearchResponse> getMyRegistedLinks(Long userId);
+
+  Long findMyFavoriteCount(Long userId);
+
+  Long findMyRegistedCount(Long userId);
 
   Link findOneActive(Long id);
 

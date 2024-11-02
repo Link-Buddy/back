@@ -41,9 +41,15 @@ public class LinkService {
     }
   }
 
-  public List<Link> getMyFavoriteLinks(Long userId) throws Exception {
+  public List<LinkDto.SearchResponse> getMyFavoriteLinks(Long userId) throws Exception {
 
     return linkRepository.getMyFavoriteLinks(userId);
+
+  }
+
+  public List<LinkDto.SearchResponse> getMyRegistedLinks(Long userId) throws Exception {
+
+    return linkRepository.getMyRegistedLinks(userId);
 
   }
 
@@ -74,10 +80,10 @@ public class LinkService {
   }
 
   public LinkDto.Mylink findMyLinkCount(Long userId) {
-    Long linkCount = linkRepository.findMyLinkCount(userId);
-    Long favoriteCount = favoriteRepository.findMyFavoriteCount(userId);
+    Long registedCount = linkRepository.findMyRegistedCount(userId);
+    Long favoriteCount = linkRepository.findMyFavoriteCount(userId);
 
-    return LinkDto.Mylink.builder().linkCount(linkCount).favoriteCount(favoriteCount).build();
+    return LinkDto.Mylink.builder().registedCount(registedCount).favoriteCount(favoriteCount).build();
   }
 
   public Link save(LinkDto.Create linkDto, Long userId) throws Exception {
