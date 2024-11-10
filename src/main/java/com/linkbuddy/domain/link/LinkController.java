@@ -49,11 +49,26 @@ public class LinkController {
             .build());
   }
 
+  @PostMapping("recent-view")
+  public ResponseEntity<?> getLinksByCategoryId(@RequestBody Map<String, List<Long>> body) throws Exception {
+    List<Long> linkIds = body.get("linkIds");
+    List<LinkDto.SearchResponse> links = linkService.findRecentViewLinks(linkIds);
+
+    Map<String, Object> linkMap = new HashMap<>();
+    linkMap.put("links", links);
+
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(linkMap)
+            .build());
+  }
+
   //좋아요 누른 게시글
   @GetMapping("favorite")
   public ResponseEntity getMyFavoriteLinks() throws Exception {
     Long userId = securityUtil.getCurrentUserId();
     List<LinkDto.SearchResponse> links = linkService.getMyFavoriteLinks(userId);
+
 
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)

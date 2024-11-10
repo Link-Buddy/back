@@ -61,6 +61,12 @@ public class LinkService {
     }
   }
 
+  public List<LinkDto.SearchResponse> findRecentViewLinks(List<Long> linkIds) throws Exception {
+
+    return linkRepository.findRecentViewLinks(linkIds);
+
+  }
+
   public List<LinkDto.SearchResponse> getMyFavoriteLinks(Long userId) throws Exception {
 
     return linkRepository.getMyFavoriteLinks(userId);
@@ -213,6 +219,7 @@ public class LinkService {
 
   /**
    * 링크 preview image
+   *
    * @param url
    * @return
    * @throws Exception

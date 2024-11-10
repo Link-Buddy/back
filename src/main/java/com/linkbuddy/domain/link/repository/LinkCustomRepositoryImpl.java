@@ -59,6 +59,23 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
   }
 
   @Override
+  public List<LinkDto.SearchResponse> findRecentViewLinks(List<Long> linkIds) {
+    List<LinkDto.SearchResponse> result =
+            query.select(new QLinkDto_SearchResponse(link, category, buddy.name))
+                    .from(link)
+                    .innerJoin(link.category, category)
+                    .leftJoin(category.buddy, buddy)
+                    .leftJoin(buddyUser)
+                    .on(buddyUser.buddy.id.eq(buddy.id)
+                            .and(buddyUser.acceptTf.isTrue()))
+                    .where(link.id.in(linkIds).and(link.deleteTf.isFalse()))
+                    .orderBy(link.createdAt.desc()) //최신정렬
+                    .fetch();
+
+    return result;
+  }
+
+  @Override
   public List<LinkDto.SearchResponse> getMyFavoriteLinks(Long userId) {
 
     List<LinkDto.SearchResponse> result =
