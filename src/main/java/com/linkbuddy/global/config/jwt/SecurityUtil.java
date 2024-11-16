@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,7 +32,6 @@ public class SecurityUtil {
 
   public Long getCurrentUserId() throws Exception {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
     if (authentication == null || authentication.getName() == null) {
       throw new RuntimeException("인증 정보가 없습니다.");
     }

@@ -94,6 +94,7 @@ public class UserController {
   public ResponseEntity getUser() throws Exception {
     Long userId = securityUtil.getCurrentUserId();
     UserDTO.UserInfo myInfo = userService.findMyInfo(userId);
+
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
             .data(myInfo)

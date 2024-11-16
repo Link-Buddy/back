@@ -57,8 +57,7 @@ public class SecurityConfig {
                     httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // 세션 미사용 설정
 
     http.authorizeHttpRequests(request -> request
-                    .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-                    .requestMatchers("/user/join", "/user/signIn", "/favicon.ico", "/user/loginSuccess", "/user/loginFailure").permitAll() // 인증 제외할 url 설정
+                    .requestMatchers("/login", "/user/join", "/user/signIn", "/favicon.ico", "/static/**", "/user/loginSuccess", "/user/loginFailure").permitAll() // 인증 제외할 url 설정
                     .anyRequest().authenticated() // 모든 요청에 대해서 인증 설정
             )
 
@@ -72,11 +71,15 @@ public class SecurityConfig {
                             .failureUrl("/user/loginFailure")
             )
             // Exception Handling 설정
-            .exceptionHandling(exception -> exception
-                    .authenticationEntryPoint(customAuthenticationEntryPoint)) // CustomAuthenticationEntryPoint 등록
+//            .exceptionHandling(exception -> exception
+//                    .authenticationEntryPoint(customAuthenticationEntryPoint)) // CustomAuthenticationEntryPoint 등록
+
 
             //JWT
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // UsernamePasswordAuthenticationFilter 전에 JWT 인증 필터 거치도록 설정
     return http.build();
+
   }
+
+
 }

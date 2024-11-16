@@ -30,15 +30,14 @@ import java.io.IOException;
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
   private final JwtTokenProvider tokenProvider;
-  private static final String URI = "/user/loginSuccess";
-
+  private static final String FRONTEND_URI = "http://localhost:3000/user/loginSuccess";
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
     //token 발급
     JwtToken token = tokenProvider.createToken(authentication);
 
-    String redirectUrl = UriComponentsBuilder.fromUriString(URI)
+    String redirectUrl = UriComponentsBuilder.fromUriString(FRONTEND_URI)
             .queryParam("accessToken", token.getAccessToken())
             .queryParam("refreshToken", token.getRefreshToken())
             .build().toUriString();
