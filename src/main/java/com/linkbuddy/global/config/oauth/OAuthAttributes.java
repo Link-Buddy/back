@@ -52,13 +52,18 @@ public class OAuthAttributes {
 
 
   private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
+
+    Map<String, Object> userData = new HashMap<>();
+
+    userData.put("sub", attributes.get("email"));
+
     return OAuthAttributes.builder()
             .name((String) attributes.get("name"))
             .email((String) attributes.get("email"))
             .picture((String) attributes.get("picture"))
             .social("google")
             .statusCd(10)
-            .attributes(attributes)
+            .attributes(userData)
             .nameAttributeKey(userNameAttributeName)
             .build();
   }
@@ -71,21 +76,17 @@ public class OAuthAttributes {
     log.info("attributes = {}", attributes);
 
     // 기준이 되는 user_name의 이름을 네이버에서는 response로 해야 한다.
-    Map<String, Object> userData = new HashMap<>();
-    userData.put("name", response.get("name"));
-    userData.put("email", response.get("email"));
-    userData.put("social", "naver");
 
     Map<String, Object> newAttributes = new HashMap<>();
-    newAttributes.put("response", userData);
+    newAttributes.put("response", response.get("email"));
 
 
     return OAuthAttributes.builder()
             .name((String) response.get("name"))
             .email((String) response.get("email"))
+            .picture((String) response.get("profile_image"))
             .social("naver")
             .statusCd(10)
-//            .picture((String) response.get("profile_image"))
             .attributes(newAttributes)
             .nameAttributeKey(userNameAttributeName)
             .build();
