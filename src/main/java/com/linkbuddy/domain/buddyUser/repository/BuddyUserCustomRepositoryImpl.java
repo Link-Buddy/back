@@ -35,7 +35,7 @@ public class BuddyUserCustomRepositoryImpl implements BuddyUserCustomRepository 
 
   @Override
   public List<UserDTO.UserResponse> findUserByBuddyId(Long buddyId) {
-    List<UserDTO.UserResponse> userList = query.select(new QUserDTO_UserResponse(user.id, user.name, user.email))
+    List<UserDTO.UserResponse> userList = query.select(new QUserDTO_UserResponse(user.id, user.name, user.email, user.imageUrl))
             .from(buddyUser)
             .leftJoin(buddyUser.user, user)
             .on(buddyUser.userId.eq(user.id))
@@ -46,7 +46,7 @@ public class BuddyUserCustomRepositoryImpl implements BuddyUserCustomRepository 
 
   @Override
   public UserDTO.UserResponse existBuddyUser(Long buddyId, Long userId) {
-    UserDTO.UserResponse existResult = query.select(new QUserDTO_UserResponse(user.id, user.name, user.email))
+    UserDTO.UserResponse existResult = query.select(new QUserDTO_UserResponse(user.id, user.name, user.email, user.imageUrl))
             .from(buddyUser)
             .leftJoin(buddyUser.user, user)
             .on(buddyUser.userId.eq(user.id))

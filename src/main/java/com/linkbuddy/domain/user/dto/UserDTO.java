@@ -36,6 +36,7 @@ public class UserDTO {
     private Long id;
     private String email;
     private String name;
+    private String imageUrl;
     private Long linkCount;
     private Long favoriteCount;
 
@@ -44,6 +45,7 @@ public class UserDTO {
       this.id = user.getId();
       this.email = user.getEmail();
       this.name = user.getName();
+      this.imageUrl = user.getImageUrl();
       this.linkCount = my.getRegistedCount();
       this.favoriteCount = my.getFavoriteCount();
     }
@@ -55,13 +57,15 @@ public class UserDTO {
     private Long id;
     private String name;
     private String email;
+    private String imageUrl;
 
     @Builder
     @QueryProjection
-    public UserResponse(Long id, String name, String email) {
+    public UserResponse(Long id, String name, String email, String imageUrl) {
       this.id = id;
       this.name = name;
       this.email = email;
+      this.imageUrl = imageUrl;
     }
   }
 
