@@ -28,17 +28,17 @@ public class OAuthAttributes {
   private String name;
   private String email;
   private String social;
-  private String picture;
+  private String imageUrl;
   private Integer statusCd;
 
   @Builder
-  public OAuthAttributes(Map<String, Object> attributes, String nameAttributeKey, String name, String email, String social, String picture, Integer statusCd) {
+  public OAuthAttributes(Map<String, Object> attributes, String nameAttributeKey, String name, String email, String social, String imageUrl, Integer statusCd) {
     this.attributes = attributes;
     this.nameAttributeKey = nameAttributeKey;
     this.name = name;
     this.email = email;
     this.social = social;
-    this.picture = picture;
+    this.imageUrl = imageUrl;
     this.statusCd = statusCd;
   }
 
@@ -56,11 +56,12 @@ public class OAuthAttributes {
     Map<String, Object> userData = new HashMap<>();
 
     userData.put("sub", attributes.get("email"));
+    log.info("picktupre", (String) attributes.get("picture"));
 
     return OAuthAttributes.builder()
             .name((String) attributes.get("name"))
             .email((String) attributes.get("email"))
-            .picture((String) attributes.get("picture"))
+            .imageUrl((String) attributes.get("picture"))
             .social("google")
             .statusCd(10)
             .attributes(userData)
@@ -84,7 +85,7 @@ public class OAuthAttributes {
     return OAuthAttributes.builder()
             .name((String) response.get("name"))
             .email((String) response.get("email"))
-            .picture((String) response.get("profile_image"))
+            .imageUrl((String) response.get("profile_image"))
             .social("naver")
             .statusCd(10)
             .attributes(newAttributes)

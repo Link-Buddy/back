@@ -1,12 +1,16 @@
 package com.linkbuddy.global.config.oauth;
 
+import com.linkbuddy.domain.category.CategoryDto;
+import com.linkbuddy.domain.category.CategoryService;
 import com.linkbuddy.domain.user.repository.UserRepository;
 import com.linkbuddy.global.config.PrincipalDetails;
+import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.User;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -18,7 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Collections;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * packageName    : com.linkbuddy.global.config.oauth
@@ -36,6 +40,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
   private final UserRepository userRepository;
+  @Autowired
+  private CategoryService categoryService;
 
   @Transactional
   @Override
@@ -57,19 +63,44 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
 
     //4. 회원가입 및 로그인
-    getOrSave(attributes, registrationId);
+    try {
+      getOrSave(attributes, registrationId);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
 
     //사용자에게 권한을 부여 (USER)
     return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority("USER")), attributes.getAttributes(), attributes.getNameAttributeKey());
   }
 
-  private User getOrSave(OAuthAttributes attributes, String registrationId) {
+  private User getOrSave(OAuthAttributes attributes, String registrationId) throws Exception {
     log.info("getOrSave attributes = {}", attributes.toEntity());
     Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-    User user = (User) userRepository.findByEmail(attributes.getEmail())
-            .map(entity -> entity.update(attributes.getName()).updateLastLoggedAt(null, currentTimestamp, registrationId))
-            .orElse(attributes.toEntity());
-    return userRepository.save(user);
+
+    Optional<User> existingUser = userRepository.findByEmail(attributes.getEmail());
+
+    User user;
+    if (existingUser.isPresent()) {
+      // 로그인 처리
+      user = existingUser.get().update(attributes.getName(), attributes.getImageUrl())
+              .updateLastLoggedAt(null, currentTimestamp, registrationId);
+      return userRepository.save(user);
+    } else {
+      // 회원가입 처리
+      user = attributes.toEntity();
+      userRepository.save(user);
+
+      // CreatePrivate 객체 생성
+      Category category = new Category();
+      category.setCategoryName("미분류");
+
+      CategoryDto.CreatePrivate privateDto = CategoryDto.CreatePrivate.builder()
+              .c(category)
+              .build();
+      categoryService.createPrivateCategory(privateDto, user.getId());
+
+      return user;
+    }
 
   }
 }

@@ -41,9 +41,9 @@ public class User {
   @Comment(value = "회원상태코드")
   private Integer statusCd;
 
-  @Column(name = "file_id")
+  @Column(name = "image_url")
   @Comment(value = "프로필이미지파일ID")
-  private Integer fileId;
+  private String imageUrl;
 
   @Column(length = 255)
   @Comment(value = "리프레시 토큰")
@@ -64,18 +64,19 @@ public class User {
   private Timestamp lastLoggedAt;
 
   @Builder
-  public User(String email, String name, String password, Integer statusCd, String social) {
+  public User(String email, String name, String password, String imageUrl, Integer statusCd, String social) {
     this.email = email;
     this.name = name;
     this.password = password;
+    this.imageUrl = imageUrl;
     this.statusCd = statusCd;
     this.social = social;
   }
 
 
-  public User update(String name) {
+  public User update(String name, String imageUrl) {
     this.name = name;
-
+    this.imageUrl = imageUrl;
     return this;
   }
 

@@ -76,6 +76,7 @@ public class UserController {
       userData.put("id", user.getId());
       userData.put("name", user.getName());
       userData.put("email", user.getEmail());
+      userData.put("imageUrl", user.getImageUrl());
 
       return ResponseEntity.ok(ResponseMessage.builder()
               .status(StatusEnum.OK)
