@@ -34,7 +34,7 @@ public class UserController {
    * @return
    */
   @PostMapping("/join")
-  public ResponseEntity createUser(User user) throws Exception {
+  public ResponseEntity createUser(@RequestBody User user) throws Exception {
     User savedUser = userService.create(user);
     return ResponseEntity.ok(ResponseMessage.builder()
             .status(StatusEnum.OK)
