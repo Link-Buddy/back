@@ -67,7 +67,7 @@ public class LinkController {
   @GetMapping("favorite")
   public ResponseEntity getMyFavoriteLinks() throws Exception {
     Long userId = securityUtil.getCurrentUserId();
-    List<LinkDto.SearchResponse> links = linkService.getMyFavoriteLinks(userId);
+    List<LinkDto.SearchLinkData> links = linkService.getMyFavoriteLinks(userId);
 
 
     return ResponseEntity.ok(ResponseMessage.builder()

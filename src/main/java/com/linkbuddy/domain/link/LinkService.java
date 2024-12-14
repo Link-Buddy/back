@@ -5,7 +5,6 @@ import com.linkbuddy.domain.category.repository.CategoryRepository;
 import com.linkbuddy.domain.favorite.repository.FavoriteRepository;
 import com.linkbuddy.domain.link.repository.LinkRepository;
 import com.linkbuddy.domain.user.dto.UserDTO;
-import com.linkbuddy.global.config.jwt.SecurityUtil;
 import com.linkbuddy.global.entity.Category;
 import com.linkbuddy.global.entity.Link;
 import lombok.extern.slf4j.Slf4j;
@@ -67,10 +66,26 @@ public class LinkService {
 
   }
 
-  public List<LinkDto.SearchResponse> getMyFavoriteLinks(Long userId) throws Exception {
+  public List<LinkDto.SearchLinkData> getMyFavoriteLinks(Long userId) throws Exception {
 
-    return linkRepository.getMyFavoriteLinks(userId);
+    List<LinkDto.SearchResponse> linkList = linkRepository.getMyFavoriteLinks(userId);
 
+    // link preview image url 추가
+    List<LinkDto.SearchLinkData> newLinkList = new ArrayList<>();
+    for (LinkDto.SearchResponse linkInfo : linkList) {
+
+      Map<String, String> previewData = getLinkPreviewData(linkInfo.getLinkUrl());
+      String imageUrl = previewData.get("imageUrl") != null ? previewData.get("imageUrl") : null;
+      String title = previewData.get("title") != null ? previewData.get("title") : "";
+
+      LinkDto.SearchLinkData newLinkInfo = LinkDto.SearchLinkData.builder()
+              .lInfo(linkInfo)
+              .imageUrl(imageUrl)
+              .urlTitle(title)
+              .build();
+      newLinkList.add(newLinkInfo);
+    }
+    return newLinkList;
   }
 
   public List<LinkDto.SearchResponse> getMyRegistedLinks(Long userId) throws Exception {
@@ -225,6 +240,7 @@ public class LinkService {
    * @throws Exception
    */
   public Map<String, String> getLinkPreviewData(String url) throws Exception {
+    Map<String, String> preview = new HashMap<>();
     try {
       // link preview
       // Jsoup으로 HTML 문서 가져오기 및 파싱
@@ -240,7 +256,6 @@ public class LinkService {
       }
 
       // 응답 데이터
-      Map<String, String> preview = new HashMap<>();
       preview.put("title", title);
       preview.put("imageUrl", imageUrl);
       preview.put("description", description);
@@ -251,8 +266,9 @@ public class LinkService {
       return preview;
 
     } catch (Exception e) {
-      System.out.println("e");
-      throw new Exception(e);
+      preview.put("imageUrl", null);
+      preview.put("title", "");
     }
+    return preview;
   }
 }
