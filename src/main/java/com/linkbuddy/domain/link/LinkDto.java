@@ -54,7 +54,6 @@ public class LinkDto {
     @Builder
     @QueryProjection
     public SearchResponse(Link l, Category c, String buddyName) {
-      System.out.println(l);
       this.linkId = l.getId();
       this.categoryName = c.getCategoryName();
       this.shareTypeCd = c.getShareTypeCd();
@@ -169,6 +168,37 @@ public class LinkDto {
       this.linkUrl = lInfo.getLinkUrl();
       this.categoryId = lInfo.getCategoryId();
       this.isFavorite = lInfo.getIsFavorite();
+      this.imageUrl = imageUrl;
+      this.urlTitle = urlTitle;
+    }
+
+  }
+
+
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class SearchLinkData {
+    private Long linkId;
+    private String categoryName;
+    private Long shareTypeCd;
+    private String buddyName;
+    private String linkName;
+    private String linkDescription;
+    private String linkUrl;
+    private String imageUrl; // url image url
+    private String urlTitle;  // url title
+
+
+    @Builder
+    public SearchLinkData(LinkDto.SearchResponse lInfo, String imageUrl, String urlTitle) {
+      this.linkId = lInfo.getLinkId();
+      this.linkName = lInfo.getLinkName();
+      this.linkDescription = lInfo.getLinkDescription();
+      this.linkUrl = lInfo.getLinkUrl();
+      this.categoryName = lInfo.getCategoryName();
+      this.shareTypeCd = lInfo.getShareTypeCd();
+      this.buddyName = lInfo.getBuddyName();
       this.imageUrl = imageUrl;
       this.urlTitle = urlTitle;
     }
