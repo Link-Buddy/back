@@ -5,6 +5,8 @@ import com.linkbuddy.global.entity.Link;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 /**
  * packageName    : com.linkbuddy.domain.link.repository
@@ -20,6 +22,8 @@ import java.util.List;
 
 public interface LinkCustomRepository {
   List<Link> findAllActive();
+
+  Boolean existsByUserIdAndDateBetween(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
   List<LinkDto.LinkInfo> findMyLinksByCategoryId(Long categoryId, Long userId);
 

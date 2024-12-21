@@ -11,8 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Repository
 @RequiredArgsConstructor
@@ -30,6 +33,21 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
 
     return result;
   }
+
+  @Override
+  public Boolean existsByUserIdAndDateBetween(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    // QueryDSL을 사용하여 조건에 맞는 데이터가 존재하는지 확인
+    long count = query.select(link.id)
+            .from(link)
+            .where(link.userId.eq(userId)
+                    .and(link.createdAt.goe(Timestamp.valueOf(startDateTime))) // 시작 날짜 이상
+                    .and(link.createdAt.loe(Timestamp.valueOf(endDateTime))) // 종료 날짜 이하
+                    .and(link.deleteTf.isFalse())) // 삭제되지 않은 데이터만 조회
+            .fetchCount();
+
+    return count > 0;
+  }
+
 
   @Override
   public List<LinkDto.LinkInfo> findMyLinksByCategoryId(Long categoryId, Long userId) {

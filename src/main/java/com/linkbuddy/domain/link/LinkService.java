@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Slf4j
@@ -34,6 +38,20 @@ public class LinkService {
 
   public List<Link> findAll() {
     return linkRepository.findAllActive();
+  }
+
+
+  public Map<String, Boolean> getWeeklyLinkStatus(Long userId, LocalDate monday, LocalDate sunday) {
+    // 월요일부터 일요일까지 날짜 생성
+    List<LocalDate> weekDates = IntStream.rangeClosed(0, 6)
+            .mapToObj(monday::plusDays)
+            .collect(Collectors.toList());
+
+    // 각 날짜에 대해 링크 존재 여부 확인
+    return weekDates.stream().collect(Collectors.toMap(
+            date -> date.getDayOfWeek().name(), // 요일 이름
+            date -> linkRepository.existsByUserIdAndDateBetween(userId, date.atStartOfDay(), date.atTime(23, 59, 59))
+    ));
   }
 
   public List<LinkDto.LinkInfoData> findMyByCategoryId(Long categoryId, Long userId) throws Exception {
