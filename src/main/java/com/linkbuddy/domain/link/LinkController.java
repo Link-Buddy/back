@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 
 @RequestMapping("links")
 @RestController
@@ -29,6 +31,24 @@ public class LinkController {
   @Autowired
   SecurityUtil securityUtil;
 
+
+  @GetMapping("weekly")
+  public ResponseEntity getWeeklyLinkStatus() throws Exception {
+    Long userId = securityUtil.getCurrentUserId();
+    System.out.println(userId);
+    // 이번 주 월요일과 일요일 계산
+    LocalDate today = LocalDate.now();
+    LocalDate monday = today.with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
+    LocalDate sunday = today.with(TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY));
+
+    // 요일별 등록 여부 확인
+    Map<String, Boolean> weeklyStatus = linkService.getWeeklyLinkStatus(userId, monday, sunday);
+
+    return ResponseEntity.ok(ResponseMessage.builder()
+            .status(StatusEnum.OK)
+            .data(weeklyStatus)
+            .build());
+  }
 
   @GetMapping("category/{categoryId}")
   public ResponseEntity getLinksByCategoryId(@PathVariable("categoryId") Long categoryId) throws Exception {
