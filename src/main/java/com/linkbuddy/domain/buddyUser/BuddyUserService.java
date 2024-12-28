@@ -111,7 +111,6 @@ public class BuddyUserService {
             throw new Exception(e);
         }
     }
-  }
 
   /**
    * 회원 버디 초대 리스트 조회
@@ -196,6 +195,4 @@ public class BuddyUserService {
       throw new Exception(e);
     }
   }
-
-
-}
+  }
