@@ -27,7 +27,7 @@ public interface LinkCustomRepository {
 
   List<LinkDto.LinkInfo> findMyLinksByCategoryId(Long categoryId, Long userId);
 
-  List<Link> findBuddyLinksByCategoryId(Long categoryId);
+  List<LinkDto.LinkInfo> findBuddyLinksByCategoryId(Long categoryId, Long userId);
 
   List<LinkDto.SearchResponse> findRecentViewLinks(List<Long> linkIds);
 

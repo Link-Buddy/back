@@ -84,4 +84,16 @@ public class BuddyUserCustomRepositoryImpl implements BuddyUserCustomRepository 
     return buddyInvitationList;
   }
 
+  @Override
+  public Boolean existsByBuddyIdAndUserId(Long buddyId, Long userId) {
+    Integer count = query.selectOne() // 단순 존재 여부 확인
+            .from(buddyUser)
+            .where(
+                    buddyUser.buddyId.eq(buddyId)
+                            .and(buddyUser.userId.eq(userId))
+            )
+            .fetchFirst(); // 하나라도 존재하면 결과 반환
+    return count != null;
+  }
+
 }

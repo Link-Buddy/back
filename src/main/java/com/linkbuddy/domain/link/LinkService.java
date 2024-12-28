@@ -54,23 +54,48 @@ public class LinkService {
     ));
   }
 
+  private List<LinkDto.LinkInfoData> addPreviewToLinks(List<LinkDto.LinkInfo> linkList) throws Exception {
+    List<LinkDto.LinkInfoData> newLinkList = new ArrayList<>();
+    for (LinkDto.LinkInfo linkInfo : linkList) {
+      Map<String, String> previewData = getLinkPreviewData(linkInfo.getLinkUrl());
+      LinkDto.LinkInfoData newLinkInfo = LinkDto.LinkInfoData.builder()
+              .lInfo(linkInfo)
+              .imageUrl(previewData.get("imageUrl"))
+              .urlTitle(previewData.get("title"))
+              .build();
+      newLinkList.add(newLinkInfo);
+    }
+    return newLinkList;
+  }
+
   public List<LinkDto.LinkInfoData> findMyByCategoryId(Long categoryId, Long userId) throws Exception {
     try {
       // 내 링크 조회 by categoryId
       List<LinkDto.LinkInfo> linkList = linkRepository.findMyLinksByCategoryId(categoryId, userId);
 
-      // link preview image url 추가
-      List<LinkDto.LinkInfoData> newLinkList = new ArrayList<>();
-      for (LinkDto.LinkInfo linkInfo : linkList) {
-        Map<String, String> previewData = getLinkPreviewData(linkInfo.getLinkUrl());
-        LinkDto.LinkInfoData newLinkInfo = LinkDto.LinkInfoData.builder()
-                .lInfo(linkInfo)
-                .imageUrl(previewData.get("imageUrl"))
-                .urlTitle(previewData.get("title"))
-                .build();
-        newLinkList.add(newLinkInfo);
+      // 링크 리스트 변환
+      return addPreviewToLinks(linkList);
+
+    } catch (Exception e) {
+      System.out.println("e");
+      throw new Exception(e);
+    }
+  }
+
+  public List<LinkDto.LinkInfoData> findBuddyLinks(Long categoryId, Long userId, Long buddyId) throws Exception {
+    try {
+      Boolean isExistBuddyUser = buddyUserRepository.existsByBuddyIdAndUserId(buddyId, userId);
+      log.info("buddyUserRepository = {}", isExistBuddyUser);
+      if (!isExistBuddyUser) {
+        log.info("buddyUserRepository = {}", isExistBuddyUser);
+        throw new IllegalArgumentException("Not exist Buddy User Data");
       }
-      return newLinkList;
+
+      // 버디 링크 조회 by categoryId
+      List<LinkDto.LinkInfo> linkList = linkRepository.findBuddyLinksByCategoryId(categoryId, userId);
+
+      // 링크 리스트 변환
+      return addPreviewToLinks(linkList);
 
     } catch (Exception e) {
       System.out.println("e");
@@ -110,18 +135,6 @@ public class LinkService {
 
     return linkRepository.getMyRegistedLinks(userId);
 
-  }
-
-
-  public List<Link> findBuddyLinksByCategoryId(Long categoryId, Long userId, Long buddyId) throws Exception {
-    try {
-      //TODO : 해당 유저가 특정 buddy에 포함되는지 확인
-
-      return linkRepository.findBuddyLinksByCategoryId(categoryId);
-    } catch (Exception e) {
-      System.out.println("e");
-      throw new Exception(e);
-    }
   }
 
 
