@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface BuddyRepository extends JpaRepository<Buddy, Long>, BuddyCustomRepository {
 
   Optional<Buddy> findByNameAndCreatorId(String name, Long currentUserId);
+
+  Optional<Buddy> findByIdAndCreatorId(Long buddyId, Long currentUserId);
 }

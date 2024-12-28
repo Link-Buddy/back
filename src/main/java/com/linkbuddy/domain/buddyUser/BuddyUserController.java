@@ -12,7 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * packageName    : com.linkbuddy.domain.buddyUser
@@ -36,18 +38,25 @@ public class BuddyUserController {
     SecurityUtil securityUtil;
 
     /**
-     * 버디에 참여중인 회원 리스트
+     * 버디에 참여중인 회원 리스트 & 방장인지 확인
      * @param buddyId
      * @return
      * @throws Exception
      */
     @GetMapping
-    public ResponseEntity getBuddyUserList(@RequestParam(value = "buddyId") Long buddyId) throws Exception {
+    public ResponseEntity getBuddyUserInfo(@RequestParam(value = "buddyId") Long buddyId) throws Exception {
         log.debug("buddyId = {}, buddyId");
+        Long userId = securityUtil.getCurrentUserId();
         List<UserDTO.UserResponse> userList = buddyUserService.findUserAll(buddyId);
+        Boolean isCreator = buddyUserService.checkBuddyCreator(buddyId, userId);
+
+        Map<String, Object> buddyUserInfo = new HashMap<>();
+        buddyUserInfo.put("isCreator", isCreator);
+        buddyUserInfo.put("list", userList);
+
         return ResponseEntity.ok(ResponseMessage.builder()
                 .status(StatusEnum.OK)
-                .data(userList)
+                .data(buddyUserInfo)
                 .build());
     }
 
@@ -108,14 +117,14 @@ public class BuddyUserController {
 
     /**
      * 회원 버디 탈퇴
-     * @param buddyId
-     * @param userId
+     * @param id
      * @return
      * @throws Exception
      */
-    @DeleteMapping
-    public ResponseEntity deleteBuddyUser(@RequestParam(value = "buddyId") Long buddyId, @RequestParam(value = "userId") Long userId) throws Exception {
-        Boolean deleteBuddyUser = buddyUserService.deleteBuddyUser(buddyId, userId);
+    @DeleteMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity deleteBuddyUser(@PathVariable("id") Long id) throws Exception {
+        Long userId = securityUtil.getCurrentUserId();
+        Boolean deleteBuddyUser = buddyUserService.deleteBuddyUser(id, userId);
         return ResponseEntity.ok(ResponseMessage.builder()
                 .status(StatusEnum.OK)
                 .data(deleteBuddyUser)

@@ -1,10 +1,12 @@
 package com.linkbuddy.domain.buddyUser;
 
 import com.linkbuddy.domain.buddy.dto.BuddyDTO;
+import com.linkbuddy.domain.buddy.repository.BuddyRepository;
 import com.linkbuddy.domain.buddyUser.repository.BuddyUserRepository;
 import com.linkbuddy.domain.user.dto.UserDTO;
 import com.linkbuddy.domain.user.repository.UserRepository;
 import com.linkbuddy.global.config.jwt.SecurityUtil;
+import com.linkbuddy.global.entity.Buddy;
 import com.linkbuddy.global.entity.BuddyUser;
 import com.linkbuddy.global.entity.User;
 import jakarta.transaction.Transactional;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * packageName    : com.linkbuddy.domain.buddyUser
@@ -31,62 +34,82 @@ import java.util.List;
 @Service
 @Slf4j
 public class BuddyUserService {
-  @Autowired
-  private BuddyUserRepository buddyUserRepository;
+    @Autowired
+    private BuddyUserRepository buddyUserRepository;
+    @Autowired
+    private BuddyRepository buddyRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private SecurityUtil securityUtil;
 
-  @Autowired
-  private UserRepository userRepository;
+    /**
+     * 버디 참여 회원 리스트 조회
+     * @param buddyId
+     * @return
+     * @throws Exception
+     */
+    public List<UserDTO.UserResponse> findUserAll(Long buddyId) throws Exception {
+        try {
+            List<UserDTO.UserResponse> userList = buddyUserRepository.findUserByBuddyId(buddyId);
+            return userList;
 
-  @Autowired
-  private SecurityUtil securityUtil;
-
-  /**
-   * 버디 참여 회원 리스트 조회
-   *
-   * @param buddyId
-   * @return
-   * @throws Exception
-   */
-  public List<UserDTO.UserResponse> findUserAll(Long buddyId) throws Exception {
-    try {
-      List<UserDTO.UserResponse> userList = buddyUserRepository.findUserByBuddyId(buddyId);
-      return userList;
-
-    } catch (Exception e) {
-      throw new Exception(e);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
     }
-  }
 
-  /**
-   * 버디 회원 생성 (친구초대)
-   *
-   * @param buddy
-   * @return
-   * @throws Exception
-   */
-  public BuddyUser createBuddyUser(BuddyDTO buddy) throws Exception {
-    try {
-      Long currentUserId = securityUtil.getCurrentUserId();
-      User invitedUser = userRepository.customFindByEmail(buddy.getEmail());
+    /**
+     * 버디 방장(creator_id) 확인
+     * @param buddyId
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    public Boolean checkBuddyCreator(Long buddyId, Long userId) throws Exception {
+        try {
+            Optional<Buddy> buddy = buddyRepository.findByIdAndCreatorId(buddyId, userId);
+            if (!buddy.isEmpty()) {
+                return true;
+            } else {
+                return false;
+            }
 
-      // 버디 회원 조회
-      BuddyUser buddyUser = buddyUserRepository.findBuddyUserByBuddyIdAndUserId(buddy.getBuddyId(), invitedUser.getId());
-      if (buddyUser == null) {
-        BuddyUser newBuddyUser = BuddyUser.builder()
-                .userId(invitedUser.getId())
-                .buddyId(buddy.getBuddyId())
-                .senderId(currentUserId)
-                .alertTf(true)  //알림여부
-                .pinTf(false)   //고정여부
-                .acceptTf(false)    //수락여부
-                .build();
-        return buddyUserRepository.save(newBuddyUser);
-      } else {
-        return null;
-      }
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
 
-    } catch (Exception e) {
-      throw new Exception(e);
+    /**
+     * 버디 회원 생성 (친구초대)
+     * @param buddy
+     * @return
+     * @throws Exception
+     */
+    public BuddyUser createBuddyUser(BuddyDTO buddy) throws Exception {
+        try {
+            Long currentUserId = securityUtil.getCurrentUserId();
+            User invitedUser = userRepository.customFindByEmail(buddy.getEmail());
+
+            // 버디 회원 조회
+            BuddyUser buddyUser = buddyUserRepository.findBuddyUserByBuddyIdAndUserId(buddy.getBuddyId(), invitedUser.getId());
+            if (buddyUser == null) {
+                BuddyUser newBuddyUser = BuddyUser.builder()
+                        .userId(invitedUser.getId())
+                        .buddyId(buddy.getBuddyId())
+                        .senderId(currentUserId)
+                        .alertTf(true)  //알림여부
+                        .pinTf(false)   //고정여부
+                        .acceptTf(false)    //수락여부
+                        .build();
+                return buddyUserRepository.save(newBuddyUser);
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
     }
   }
 
