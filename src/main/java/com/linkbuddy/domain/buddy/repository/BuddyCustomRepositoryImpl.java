@@ -36,6 +36,7 @@ public class BuddyCustomRepositoryImpl implements BuddyCustomRepository {
                 .join(buddyUser.buddy, buddy)
                 .on(buddyUser.buddyId.eq(buddy.id))
                 .where(buddyUser.userId.eq(userId).and(buddyUser.acceptTf.eq(true)))
+                .orderBy(buddyUser.pinTf.desc(), buddyUser.updatedAt.asc())
                 .fetch();
         return buddyList;
     }

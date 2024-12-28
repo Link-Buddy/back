@@ -1,10 +1,12 @@
 package com.linkbuddy.domain.buddyUser;
 
 import com.linkbuddy.domain.buddy.dto.BuddyDTO;
+import com.linkbuddy.domain.buddy.repository.BuddyRepository;
 import com.linkbuddy.domain.buddyUser.repository.BuddyUserRepository;
 import com.linkbuddy.domain.user.dto.UserDTO;
 import com.linkbuddy.domain.user.repository.UserRepository;
 import com.linkbuddy.global.config.jwt.SecurityUtil;
+import com.linkbuddy.global.entity.Buddy;
 import com.linkbuddy.global.entity.BuddyUser;
 import com.linkbuddy.global.entity.User;
 import jakarta.transaction.Transactional;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * packageName    : com.linkbuddy.domain.buddyUser
@@ -33,10 +36,10 @@ import java.util.List;
 public class BuddyUserService {
     @Autowired
     private BuddyUserRepository buddyUserRepository;
-
+    @Autowired
+    private BuddyRepository buddyRepository;
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private SecurityUtil securityUtil;
 
@@ -50,6 +53,27 @@ public class BuddyUserService {
         try {
             List<UserDTO.UserResponse> userList = buddyUserRepository.findUserByBuddyId(buddyId);
             return userList;
+
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    /**
+     * 버디 방장(creator_id) 확인
+     * @param buddyId
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    public Boolean checkBuddyCreator(Long buddyId, Long userId) throws Exception {
+        try {
+            Optional<Buddy> buddy = buddyRepository.findByIdAndCreatorId(buddyId, userId);
+            if (!buddy.isEmpty()) {
+                return true;
+            } else {
+                return false;
+            }
 
         } catch (Exception e) {
             throw new Exception(e);
