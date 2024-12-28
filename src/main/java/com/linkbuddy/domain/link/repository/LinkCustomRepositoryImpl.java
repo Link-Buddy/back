@@ -70,9 +70,22 @@ public class LinkCustomRepositoryImpl implements LinkCustomRepository {
   }
 
   @Override
-  public List<Link> findBuddyLinksByCategoryId(Long categoryId) {
-    List<Link> result = query.selectFrom(link).where(link.deleteTf.eq(false).and(link.categoryId.eq(categoryId))).fetch();
-
+  public List<LinkDto.LinkInfo> findBuddyLinksByCategoryId(Long categoryId, Long userId) {
+    List<LinkDto.LinkInfo> result = query.select(link, favorite.id.isNotNull().as("isFavorite"))
+            .from(link)
+            .leftJoin(favorite).on(link.id.eq(favorite.linkId)
+                    .and((favorite.userId.eq(userId))))
+            .where(link.deleteTf.eq(false)
+                    .and(link.categoryId.eq(categoryId))
+            )
+            .fetch()
+            .stream()
+            .map(tuple -> {
+              Link linkEntity = tuple.get(0, Link.class);
+              Boolean isFavorite = tuple.get(1, Boolean.class);
+              return new LinkDto.LinkInfo(linkEntity, isFavorite);
+            })
+            .collect(Collectors.toList());
     return result;
   }
 

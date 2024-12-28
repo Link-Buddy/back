@@ -1,5 +1,6 @@
 package com.linkbuddy.domain.link;
 
+import com.linkbuddy.domain.buddyUser.BuddyUserService;
 import com.linkbuddy.domain.category.CategoryService;
 import com.linkbuddy.global.config.jwt.SecurityUtil;
 import com.linkbuddy.global.entity.Category;
@@ -29,6 +30,9 @@ public class LinkController {
   @Autowired
   private CategoryService categoryService;
   @Autowired
+  private BuddyUserService buddyUserService;
+
+  @Autowired
   SecurityUtil securityUtil;
 
 
@@ -51,13 +55,21 @@ public class LinkController {
   }
 
   @GetMapping("category/{categoryId}")
-  public ResponseEntity getLinksByCategoryId(@PathVariable("categoryId") Long categoryId) throws Exception {
+  public ResponseEntity getLinksByCategoryId(@PathVariable("categoryId") Long categoryId,
+                                             @RequestParam(value = "buddyId", required = false) Long buddyId) throws Exception {
     // userId 조회
     Long userId = securityUtil.getCurrentUserId();
     // 카테고리 데이터 조회
     Category category = categoryService.getCategory(categoryId);
-    // 링크 리스트 조회
-    List<LinkDto.LinkInfoData> links = linkService.findMyByCategoryId(categoryId, userId);
+    List<LinkDto.LinkInfoData> links;
+
+    if (buddyId != null) {
+      // buddy
+      links = linkService.findBuddyLinks(categoryId, userId, buddyId);
+    } else {
+      // 내 리스트 조회
+      links = linkService.findMyByCategoryId(categoryId, userId);
+    }
 
     Map<String, Object> linkMap = new HashMap<>();
     linkMap.put("category", category);

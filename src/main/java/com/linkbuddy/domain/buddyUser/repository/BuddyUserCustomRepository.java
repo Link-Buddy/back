@@ -39,4 +39,6 @@ public interface BuddyUserCustomRepository {
    * 버디 회원 초대 리스트 조회
    */
   List<BuddyDTO.BuddyInvitationResponse> findBuddyUserInvitationsByUserId(Long userId);
+
+  Boolean existsByBuddyIdAndUserId(Long buddyId, Long userId);
 }
