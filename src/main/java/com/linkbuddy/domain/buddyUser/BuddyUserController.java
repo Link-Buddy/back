@@ -1,8 +1,10 @@
 package com.linkbuddy.domain.buddyUser;
 
+import com.linkbuddy.domain.buddy.BuddyService;
 import com.linkbuddy.domain.buddy.dto.BuddyDTO;
 import com.linkbuddy.domain.user.dto.UserDTO;
 import com.linkbuddy.global.config.jwt.SecurityUtil;
+import com.linkbuddy.global.entity.Buddy;
 import com.linkbuddy.global.entity.BuddyUser;
 import com.linkbuddy.global.util.ResponseMessage;
 import com.linkbuddy.global.util.StatusEnum;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * packageName    : com.linkbuddy.domain.buddyUser
@@ -33,12 +36,14 @@ import java.util.Map;
 public class BuddyUserController {
     @Autowired
     BuddyUserService buddyUserService;
+    @Autowired
+    BuddyService buddyService;
 
     @Autowired
     SecurityUtil securityUtil;
 
     /**
-     * 버디에 참여중인 회원 리스트 & 방장인지 확인
+     * 버디 유저 조회 (참여중인 회원 리스트 & 방장인지 확인 & 버디 정보)
      * @param buddyId
      * @return
      * @throws Exception
@@ -47,10 +52,15 @@ public class BuddyUserController {
     public ResponseEntity getBuddyUserInfo(@RequestParam(value = "buddyId") Long buddyId) throws Exception {
         log.debug("buddyId = {}, buddyId");
         Long userId = securityUtil.getCurrentUserId();
+        // 버디 유저 리스트
         List<UserDTO.UserResponse> userList = buddyUserService.findUserAll(buddyId);
+        // 방장여부
         Boolean isCreator = buddyUserService.checkBuddyCreator(buddyId, userId);
+        // 버디 정보
+        Optional<Buddy> buddyInfo = buddyService.findById(buddyId);
 
         Map<String, Object> buddyUserInfo = new HashMap<>();
+        buddyUserInfo.put("buddyInfo", buddyInfo);
         buddyUserInfo.put("isCreator", isCreator);
         buddyUserInfo.put("list", userList);
 

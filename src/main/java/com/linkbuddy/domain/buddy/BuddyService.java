@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -119,8 +120,10 @@ public class BuddyService {
                     .orElseThrow(() -> new IllegalArgumentException("Not exist Buddy Data"));
             log.info("buddy.getCreator_id()= {}", buddyDTO.getUserId());
             log.info("buddy.getCreator_id() = {}", buddy.getCreatorId());
+
+            Long currentUserId = securityUtil.getCurrentUserId();
             // buddy를 생성한 사람만 이름 수정 가능
-            if (Long.valueOf(buddyDTO.getUserId()) != buddy.getCreatorId()) {
+            if (!Objects.equals(currentUserId, buddy.getCreatorId())) {
                 throw new IllegalArgumentException("Cannot access to update Buddy");
             }
             buddy.update(buddyDTO.getName());
